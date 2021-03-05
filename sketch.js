@@ -1,10 +1,11 @@
 let Rectangulars = [];
 let Border_line_x_point = 300;
 let All_lines = [];
+let a = 0;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   grid = new Grid();
-  for (i = 0; i < 100; i++) {
+  for (i = 0; i < 20; i++) {
     Rectangulars[i] = new Rectangular(
       Math.floor(Math.random() * (100 - 10 + 1)) + 10,
       Math.floor(Math.random() * (100 - 10 + 1)) + 10,
@@ -13,14 +14,13 @@ function setup() {
       i
     );
   }
+  console.log(Rectangulars);
   for (i = 0; i < windowHeight; i++) {
-    All_lines[i] = new All_line(0, i, Border_line_x_point);
+    All_lines[i] = new All_line(0, Border_line_x_point, i);
   }
-  console.log(All_lines);
   var button = createButton("bottom left");
   button.position(windowWidth - 100, windowHeight - 100);
   button.mousePressed(order);
-  console.log(Rectangulars);
 }
 
 function draw() {
@@ -37,21 +37,55 @@ function windowResized() {
 }
 
 function order() {
-  var bestLine = getBestLine(Rectangulars[0].width);
-  Rectangulars[0].x = bestLine.startPoint_x;
-  Rectangulars[0].y = bestLine.startPoint_y - (Rectangulars[0].height - 1);
-  updateLines(Rectangulars[0]);
+  var bestLine = getBestLine(Rectangulars[a].width);
+  Rectangulars[a].x = bestLine.startPoint_x;
+  Rectangulars[a].y = bestLine.startPoint_y - (Rectangulars[a].height - 1);
+  updateLines(Rectangulars[a]);
+  a = a + 1;
 }
 function updateLines(PlacedRectangular) {
   var PlacedRectangularY = PlacedRectangular.y;
+  var PlacedRectangularX = PlacedRectangular.x;
   for (i = 0; i < PlacedRectangular.height; i++) {
     for (k = 0; k < All_lines.length; k++) {
       if (PlacedRectangularY == All_lines[k].startPoint_y) {
         if (PlacedRectangular.x >= All_lines[k].startPoint_x) {
           if (PlacedRectangular.x <= All_lines[k].endPoint_x) {
-            All_lines[k].startPoint_x =
-              All_lines[k].startPoint_x + PlacedRectangular.width;
-            PlacedRectangularY = PlacedRectangularY + 1;
+            if (
+              All_lines[k].startPoint_x < PlacedRectangularX &&
+              PlacedRectangularX + PlacedRectangular.width <
+                All_lines[k].endPoint_x
+            ) {
+              temp = All_lines[k].endPoint_x;
+              All_lines[k].endPoint_x = PlacedRectangularX;
+
+              All_lines.push(
+                new All_line(
+                  PlacedRectangularX + PlacedRectangular.width,
+                  temp,
+                  All_lines[k].startPoint_y
+                )
+              );
+              PlacedRectangularY = PlacedRectangularY + 1;
+              SortTheLines();
+            } else if (
+              All_lines[k].startPoint_x == PlacedRectangularX &&
+              All_lines[k].endPoint_x >
+                PlacedRectangularX + PlacedRectangular.width
+            ) {
+              All_lines[k].startPoint_x =
+                PlacedRectangularX + PlacedRectangular.width;
+              PlacedRectangularY = PlacedRectangularY + 1;
+              SortTheLines();
+            } else if (
+              All_lines[k].endPoint_x ==
+                PlacedRectangularX + PlacedRectangular.width &&
+              All_lines[k].startPoint_x == PlacedRectangularX
+            ) {
+              All_lines[k].startPoint_y = 0;
+              PlacedRectangularY = PlacedRectangularY + 1;
+              SortTheLines();
+            }
           }
         }
       }
@@ -61,12 +95,7 @@ function updateLines(PlacedRectangular) {
 }
 
 function getBestLine(widthofRectangular) {
-  All_lines.sort((a, b) => {
-    if (a.startPoint_y == b.startPoint_y) {
-      return a.startPoint_x - b.startPoint_x;
-    }
-    return b.startPoint_y - a.startPoint_y;
-  });
+  SortTheLines();
   for (i = 0; i < All_lines.length; i++) {
     if (
       widthofRectangular <=
@@ -76,6 +105,14 @@ function getBestLine(widthofRectangular) {
       return All_lines[i];
     }
   }
+}
+function SortTheLines() {
+  All_lines.sort((a, b) => {
+    if (a.startPoint_y == b.startPoint_y) {
+      return a.startPoint_x - b.startPoint_x;
+    }
+    return b.startPoint_y - a.startPoint_y;
+  });
 }
 
 class Rectangular {
@@ -98,10 +135,10 @@ class Rectangular {
   }
 }
 class All_line {
-  constructor(startPoint_x, startPoint_y, endPoint_x) {
+  constructor(startPoint_x, endPoint_x, startPoint_y) {
     this.startPoint_x = startPoint_x;
-    this.startPoint_y = startPoint_y;
     this.endPoint_x = endPoint_x;
+    this.startPoint_y = startPoint_y;
   }
   show() {}
   getY() {
