@@ -1,5 +1,5 @@
 let Rectangulars = [];
-let Border_line_x_point = 300;
+let Border_line_x_point = 200;
 let All_lines = [];
 let a = 0;
 function setup() {
@@ -37,7 +37,7 @@ function windowResized() {
 }
 
 function order() {
-  var bestLine = getBestLine(Rectangulars[a].width);
+  var bestLine = getBestLine(Rectangulars[a]);
   Rectangulars[a].x = bestLine.startPoint_x;
   Rectangulars[a].y = bestLine.startPoint_y - (Rectangulars[a].height - 1);
   updateLines(Rectangulars[a]);
@@ -67,7 +67,16 @@ function updateLines(PlacedRectangular) {
                 )
               );
               PlacedRectangularY = PlacedRectangularY + 1;
-              SortTheLines();
+
+              var tempStartpointx = All_lines[k].startPoint_x;
+              for (x = 0; x < All_lines.length; x++) {
+                if (
+                  tempStartpointx == PlacedRectangularX &&
+                  All_lines[x].startPoint_y >
+                    PlacedRectangular.y + PlacedRectangular.height
+                ) {
+                }
+              }
             } else if (
               All_lines[k].startPoint_x == PlacedRectangularX &&
               All_lines[k].endPoint_x >
@@ -76,7 +85,6 @@ function updateLines(PlacedRectangular) {
               All_lines[k].startPoint_x =
                 PlacedRectangularX + PlacedRectangular.width;
               PlacedRectangularY = PlacedRectangularY + 1;
-              SortTheLines();
             } else if (
               All_lines[k].endPoint_x ==
                 PlacedRectangularX + PlacedRectangular.width &&
@@ -84,21 +92,35 @@ function updateLines(PlacedRectangular) {
             ) {
               All_lines[k].startPoint_y = 0;
               PlacedRectangularY = PlacedRectangularY + 1;
-              SortTheLines();
             }
           }
         }
       }
     }
   }
+  SortTheLines();
+  var UnderLinesY = PlacedRectangular.y + PlacedRectangular.height;
+  var UnderLinesStarterX = PlacedRectangular.x;
+  var UnderLinesEndingX = PlacedRectangular.x + PlacedRectangular.width;
+  for (y = 0; y < PlacedRectangular.width; y++) {
+    for (i = 0; i < All_lines.length; i++) {
+      if (
+        All_lines[i].startPoint_x == UnderLinesStarterX &&
+        All_lines[i].startPoint_y >= UnderLinesY
+      ) {
+        All_lines[i].startPoint_x = UnderLinesEndingX;
+      }
+    }
+    UnderLinesStarterX = UnderLinesStarterX + 1;
+  }
   console.log(All_lines);
 }
 
-function getBestLine(widthofRectangular) {
+function getBestLine(WillPlacedRectangular) {
   SortTheLines();
   for (i = 0; i < All_lines.length; i++) {
     if (
-      widthofRectangular <=
+      WillPlacedRectangular.width <=
       All_lines[i].endPoint_x - All_lines[i].startPoint_x
     ) {
       console.log(All_lines[i]);
@@ -139,12 +161,5 @@ class All_line {
     this.startPoint_x = startPoint_x;
     this.endPoint_x = endPoint_x;
     this.startPoint_y = startPoint_y;
-  }
-  show() {}
-  getY() {
-    return this.startPoint_y;
-  }
-  getX() {
-    return this.startPoint_x;
   }
 }
