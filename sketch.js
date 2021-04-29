@@ -57,7 +57,6 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-//
 function SkylineBottomLeftOrder() {
   for (z = 0; z < Rectangulars.length; z++) {
     var bestLine = getBestLine(Rectangulars[z]);
@@ -66,8 +65,9 @@ function SkylineBottomLeftOrder() {
     updateLines(Rectangulars[z]);
     SortTheLines();
   }
-  getTheScore();
+  var Score = getTheScore();
   loop();
+  return Score;
 }
 
 function getTheScore() {
