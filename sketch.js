@@ -8,7 +8,7 @@ let Border_line_X = 800;
 let All_lines = [];
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 150;
+let Number_for_random_rectangulars = 100;
 
 // Empty array for used best lines.
 let Used_best_lines = [];
@@ -32,10 +32,14 @@ function setup() {
     All_lines[i] = new All_line(0, Border_line_X, i);
   }
   SortTheLines();
-  var button = createButton("bottom left");
-  button.position(windowWidth - 100, windowHeight - 100);
-  button.mousePressed(() => SkylineBottomLeftOrder());
-  noLoop();
+
+  
+  stopCondition = 10;
+  popmax = 10;
+  mutationRate = 0.01;
+
+  // Create a population with a target phrase, mutation rate, and population max
+  population = new Population(mutationRate, popmax, Rectangulars, stopCondition);
 }
 
 function draw() {
@@ -50,6 +54,21 @@ function draw() {
   // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
+
+  // Generate mating pool
+  population.naturalSelection();
+  //Create next generation
+  population.generate();
+  // Calculate fitness
+  population.calcFitness();
+
+  population.evaluate();
+
+  // If we found the target phrase, stop
+  if (population.isFinished()) {
+    noLoop();
+    console.log(population);
+  }
 }
 
 // Function for resize Canvas according to Window dimensions.
@@ -57,12 +76,12 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function SkylineBottomLeftOrder() {
-  for (z = 0; z < Rectangulars.length; z++) {
-    var bestLine = getBestLine(Rectangulars[z]);
-    Rectangulars[z].X = bestLine.Start_point_X;
-    Rectangulars[z].Y = bestLine.Y - Rectangulars[z].height;
-    updateLines(Rectangulars[z]);
+function SkylineBottomLeftOrder(rectangles) {
+  for (z = 0; z < rectangles.length; z++) {
+    var bestLine = getBestLine(rectangles[z]);
+    rectangles[z].X = bestLine.Start_point_X;
+    rectangles[z].Y = bestLine.Y - rectangles[z].height;
+    updateLines(rectangles[z]);
     SortTheLines();
   }
   var Score = getTheScore();
@@ -83,8 +102,6 @@ function getTheScore() {
       Score = tempScore;
     }
   }
-  console.log(Score);
-  console.log(Rectangulars);
   return Score;
 }
 

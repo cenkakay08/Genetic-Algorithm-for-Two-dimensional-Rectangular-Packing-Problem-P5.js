@@ -1,11 +1,10 @@
 class Population {
-    constructor(p, m, num, initialArray, stopCondition) {
+    constructor(m, num, initialArray, stopCondition) {
   
       this.population; // Array to hold the current population
       this.matingPool; // ArrayList for mating pool
       this.generations = 0; // Number of generations
       this.finished = false; // Are we finished evolving?
-      this.target = p; // Target
       this.mutationRate = m; // Mutation rate
       this.perfectScore = 1;
       this.stopCondition = stopCondition;
@@ -23,7 +22,7 @@ class Population {
     // Fitness Scores
     calcFitness() {
       for (let i = 0; i < this.population.length; i++) {
-        this.population[i].calcFitness(target);
+        this.population[i].calcFitness();
       }
     }
   
