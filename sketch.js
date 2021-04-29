@@ -8,7 +8,7 @@ let Border_line_X = 800;
 let All_lines = [];
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 165;
+let Number_for_random_rectangulars = 150;
 
 // Empty array for used best lines.
 let Used_best_lines = [];
@@ -31,10 +31,11 @@ function setup() {
   for (i = 0; i < windowHeight; i++) {
     All_lines[i] = new All_line(0, Border_line_X, i);
   }
-
+  SortTheLines();
   var button = createButton("bottom left");
   button.position(windowWidth - 100, windowHeight - 100);
   button.mousePressed(() => SkylineBottomLeftOrder());
+  noLoop();
 }
 
 function draw() {
@@ -65,6 +66,7 @@ function SkylineBottomLeftOrder() {
     updateLines(Rectangulars[z]);
     SortTheLines();
   }
+  loop();
 }
 function updateLines(PlacedRectangular) {
   var PlacedRectangularY = PlacedRectangular.Y;
@@ -163,14 +165,13 @@ function DeletetheUnderLines(PlacedRectangular) {
 }
 
 function getBestLine(Will_placed_Rectangular) {
-  SortTheLines();
   for (i = 0; i < All_lines.length; i++) {
     if (
       Will_placed_Rectangular.width <=
       All_lines[i].End_point_X - All_lines[i].Start_point_X
     ) {
       Used_best_lines.push(All_lines[i]);
-      console.log(JSON.parse(JSON.stringify(Used_best_lines)));
+      //console.log(JSON.parse(JSON.stringify(Used_best_lines)));
       return All_lines[i];
     }
   }
