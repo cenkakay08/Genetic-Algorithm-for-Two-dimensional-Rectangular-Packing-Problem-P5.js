@@ -66,8 +66,28 @@ function SkylineBottomLeftOrder() {
     updateLines(Rectangulars[z]);
     SortTheLines();
   }
+  getTheScore();
   loop();
 }
+
+function getTheScore() {
+  var ratio = parseInt((Number_for_random_rectangulars / 100) * 20);
+  var Score = 9999;
+  for (
+    i = Number_for_random_rectangulars - ratio;
+    i < Number_for_random_rectangulars;
+    i++
+  ) {
+    var tempScore = Rectangulars[i].Y;
+    if (tempScore < Score) {
+      Score = tempScore;
+    }
+  }
+  console.log(Score);
+  console.log(Rectangulars);
+  return Score;
+}
+
 function updateLines(PlacedRectangular) {
   var PlacedRectangularY = PlacedRectangular.Y;
 
