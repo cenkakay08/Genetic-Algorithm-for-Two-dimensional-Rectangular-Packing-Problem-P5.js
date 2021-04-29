@@ -1,5 +1,5 @@
 class Population {
-    constructor(p, m, num, initialArray) {
+    constructor(p, m, num, initialArray, stopCondition) {
   
       this.population; // Array to hold the current population
       this.matingPool; // ArrayList for mating pool
@@ -8,6 +8,7 @@ class Population {
       this.target = p; // Target
       this.mutationRate = m; // Mutation rate
       this.perfectScore = 1;
+      this.stopCondition = stopCondition;
   
       this.best = "";
   
@@ -62,6 +63,10 @@ class Population {
         this.population[i] = child;
       }
       this.generations++;
+
+      if(this.generations >= this.stopCondition) {
+        this.isFinished = true;
+      }
     }
   
   
@@ -81,9 +86,6 @@ class Population {
       }
   
       this.best = this.population[index].genes.map(String);
-      if (worldrecord === this.perfectScore) {
-        this.finished = true;
-      }
     }
   
     isFinished() {
