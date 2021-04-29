@@ -67,7 +67,6 @@ function draw() {
   // If we found the target phrase, stop
   if (population.isFinished()) {
     noLoop();
-    console.log(population);
   }
 }
 
