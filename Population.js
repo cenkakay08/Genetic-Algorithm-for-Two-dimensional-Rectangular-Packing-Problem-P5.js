@@ -104,16 +104,4 @@ class Population {
     }
     return total / (this.population.length);
   }
-
-  allPhrases() {
-    let everything = "";
-
-    let displayLimit = min(this.population.length, 50);
-
-
-    for (let i = 0; i < displayLimit; i++) {
-      everything += this.population[i].genes.map(String) + "<br>";
-    }
-    return everything;
-  }
 }

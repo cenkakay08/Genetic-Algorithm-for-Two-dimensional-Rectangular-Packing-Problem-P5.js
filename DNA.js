@@ -24,8 +24,7 @@ class DNA {
 
     //Calculate Fitness Score
     calcFitness() {
-        let score = SkylineBottomLeftOrder(this.genes);
-        console.log(this.genes);
+        let score = NewBottomLeftFunction(this.genes);
 
         this.fitness = -score;
     }
@@ -36,10 +35,11 @@ class DNA {
         let child = new DNA(this.genes);//because of we will change genes on later we can give any genes
         child.genes = [...this.genes];
         let crossoverRate = 0.25;
+        console.log("das");
 
         for (let i = 0; i < int(this.genes.length * crossoverRate); i++) {
             let selectedGene = this.genes[i];
-            let partnerLoc = partner.genes.indexOf(selectedGene);
+            let partnerLoc = partner.genes.findIndex(x => x.id === selectedGene.id);
             let targetLocationGene = this.genes[partnerLoc];
 
             child.genes[partnerLoc] = selectedGene;

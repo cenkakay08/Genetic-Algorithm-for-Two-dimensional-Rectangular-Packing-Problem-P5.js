@@ -5,7 +5,7 @@ let Rectangulars = [];
 let Border_line_X = 800;
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 150;
+let Number_for_random_rectangulars = 100;
 
 function setup() {
   // Canvas created according to Window dimensions.
@@ -21,13 +21,13 @@ function setup() {
     );
   }
 
-  target = 10;
-  popmax = 100;
+  stopCondition = 30;
+  popmax = 10;
   mutationRate = 0.01;
-  let initial = [2,5,6,4,1,3];
+  console.log(Rectangulars)
 
   // Create a population with a target phrase, mutation rate, and population max
-  population = new Population(target, mutationRate, popmax, initial);
+  population = new Population(mutationRate, popmax, Rectangulars, stopCondition);
 }
 
 function draw() {
@@ -63,13 +63,14 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function NewBottomLeftFunction(RectangelArrays, BinWidth, BinHeight) {
+function NewBottomLeftFunction(RectangelArrays) {
+  var BinWidth = 600;
+  var BinHeight = 800;
   var Lines = [];
   for (i = 0; i < BinHeight; i++) {
     Lines[i] = new All_line(0, BinWidth, i);
   }
   Lines = NewSortLines(Lines);
-  console.log(RectangelArrays.length);
   for (z = 0; z < RectangelArrays.length; z++) {
     var bestLine = NewGetBestLine(RectangelArrays[z], Lines);
     RectangelArrays[z].X = bestLine.Start_point_X;
@@ -90,8 +91,6 @@ function NewGetScore(RectangelArrays) {
       Score = tempScore;
     }
   }
-  console.log(Score);
-  console.log(RectangelArrays);
   return Score;
 }
 
