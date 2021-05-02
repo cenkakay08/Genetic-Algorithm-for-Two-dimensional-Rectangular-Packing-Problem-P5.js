@@ -22,7 +22,9 @@ function setup() {
   }
   var button2 = createButton("NEW bottom left");
   button2.position(windowWidth - 300, windowHeight - 300);
-  button2.mousePressed(() => NewBottomLeftFunction(Rectangulars));
+  button2.mousePressed(() =>
+    NewBottomLeftFunction(Rectangulars, Border_line_X, windowHeight)
+  );
 }
 
 function draw() {
@@ -44,10 +46,10 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function NewBottomLeftFunction(RectangelArrays) {
+function NewBottomLeftFunction(RectangelArrays, BinWidth, BinHeight) {
   var Lines = [];
-  for (i = 0; i < windowHeight; i++) {
-    Lines[i] = new All_line(0, Border_line_X, i);
+  for (i = 0; i < BinHeight; i++) {
+    Lines[i] = new All_line(0, BinWidth, i);
   }
   Lines = NewSortLines(Lines);
   console.log(RectangelArrays.length);
