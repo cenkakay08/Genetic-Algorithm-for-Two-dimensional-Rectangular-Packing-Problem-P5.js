@@ -23,17 +23,11 @@ class DNA {
     }
 
     //Calculate Fitness Score
-    calcFitness(target) {
-        let score = 0;
+    calcFitness() {
+        let score = SkylineBottomLeftOrder(this.genes);
+        console.log(this.genes);
 
-        for (let i = 0; i < this.genes.length; i++) {
-
-            if(this.genes[i] == target[i]) {
-                score++;
-            }
-        }
-
-        this.fitness = score / target.length;
+        this.fitness = -score;
     }
 
     //Croosover
