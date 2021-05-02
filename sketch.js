@@ -4,14 +4,8 @@ let Rectangulars = [];
 // Bin corner border value.
 let Border_line_X = 800;
 
-// EmptY arraY for lines.
-let All_lines = [];
-
 // Set number for quantity of random Rectangulars.
 let Number_for_random_rectangulars = 150;
-
-// Empty array for used best lines.
-let Used_best_lines = [];
 
 function setup() {
   // Canvas created according to Window dimensions.
@@ -26,16 +20,9 @@ function setup() {
       i
     );
   }
-
-  // Created all lines for the placement of Rectangulars.
-  for (i = 0; i < windowHeight; i++) {
-    All_lines[i] = new All_line(0, Border_line_X, i);
-  }
-  SortTheLines();
-  var button = createButton("bottom left");
-  button.position(windowWidth - 100, windowHeight - 100);
-  button.mousePressed(() => SkylineBottomLeftOrder());
-  noLoop();
+  var button2 = createButton("NEW bottom left");
+  button2.position(windowWidth - 300, windowHeight - 300);
+  button2.mousePressed(() => NewBottomLeftFunction(Rectangulars));
 }
 
 function draw() {
@@ -57,152 +44,148 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function SkylineBottomLeftOrder() {
-  for (z = 0; z < Rectangulars.length; z++) {
-    var bestLine = getBestLine(Rectangulars[z]);
-    Rectangulars[z].X = bestLine.Start_point_X;
-    Rectangulars[z].Y = bestLine.Y - Rectangulars[z].height;
-    updateLines(Rectangulars[z]);
-    SortTheLines();
+function NewBottomLeftFunction(RectangelArrays) {
+  var Lines = [];
+  for (i = 0; i < windowHeight; i++) {
+    Lines[i] = new All_line(0, Border_line_X, i);
   }
-  var Score = getTheScore();
-  loop();
+  Lines = NewSortLines(Lines);
+  console.log(RectangelArrays.length);
+  for (z = 0; z < RectangelArrays.length; z++) {
+    var bestLine = NewGetBestLine(RectangelArrays[z], Lines);
+    RectangelArrays[z].X = bestLine.Start_point_X;
+    RectangelArrays[z].Y = bestLine.Y - RectangelArrays[z].height;
+    Lines = NewUpdateLines(RectangelArrays[z], Lines);
+    Lines = NewSortLines(Lines);
+  }
+  Rectangulars = RectangelArrays;
+  var Score = NewGetScore(RectangelArrays);
   return Score;
 }
-
-function getTheScore() {
-  var ratio = parseInt((Number_for_random_rectangulars / 100) * 20);
+function NewGetScore(RectangelArrays) {
+  var ratio = parseInt((RectangelArrays.length / 100) * 20);
   var Score = 9999;
-  for (
-    i = Number_for_random_rectangulars - ratio;
-    i < Number_for_random_rectangulars;
-    i++
-  ) {
-    var tempScore = Rectangulars[i].Y;
+  for (i = RectangelArrays.length - ratio; i < RectangelArrays.length; i++) {
+    var tempScore = RectangelArrays[i].Y;
     if (tempScore < Score) {
       Score = tempScore;
     }
   }
   console.log(Score);
-  console.log(Rectangulars);
+  console.log(RectangelArrays);
   return Score;
 }
 
-function updateLines(PlacedRectangular) {
-  var PlacedRectangularY = PlacedRectangular.Y;
-
-  for (i = 0; i < PlacedRectangular.height + 1; i++) {
-    for (k = 0; k < All_lines.length; k++) {
-      // Aynı y sırasında olanlar
-      if (PlacedRectangularY == All_lines[k].Y) {
-        // Durum 1 tam oturursa
-        if (
-          PlacedRectangular.X == All_lines[k].Start_point_X &&
-          PlacedRectangular.X + PlacedRectangular.width ==
-            All_lines[k].End_point_X
-        ) {
-          All_lines[k].Y = -100;
-          PlacedRectangularY = PlacedRectangularY + 1;
-          // Druum 2 sol tarafı kapalı sağ açık
-        } else if (
-          PlacedRectangular.X == All_lines[k].Start_point_X &&
-          PlacedRectangular.X + PlacedRectangular.width <
-            All_lines[k].End_point_X
-        ) {
-          All_lines[k].Start_point_X =
-            PlacedRectangular.X + PlacedRectangular.width;
-          PlacedRectangularY = PlacedRectangularY + 1;
-          // durum 3 sağ tarafı kapalı sol açık
-        } else if (
-          PlacedRectangular.X > All_lines[k].Start_point_X &&
-          PlacedRectangular.X + PlacedRectangular.width ==
-            All_lines[k].End_point_X
-        ) {
-          All_lines[k].End_point_X = PlacedRectangular.X;
-          PlacedRectangularY = PlacedRectangularY + 1;
-          // durum 4 ortada her tarafı açıkta
-        } else if (
-          PlacedRectangular.X > All_lines[k].Start_point_X &&
-          PlacedRectangular.X + PlacedRectangular.width <
-            All_lines[k].End_point_X
-        ) {
-          temp_End_point_X = All_lines[k].End_point_X;
-          All_lines[k].End_point_X = PlacedRectangular.X;
-          var CuttedLine = new All_line(
-            PlacedRectangular.X + PlacedRectangular.width,
-            temp_End_point_X,
-            All_lines[k].Y
-          );
-          All_lines.push(CuttedLine);
-          PlacedRectangularY = PlacedRectangularY + 1;
-        }
-      }
-    }
-  }
-  DeletetheUnderLines(PlacedRectangular);
-}
-function DeletetheUnderLines(PlacedRectangular) {
-  for (t = 0; t < PlacedRectangular.width + 1; t++) {
-    for (f = 0; f < All_lines.length; f++) {
-      if (PlacedRectangular.Y + PlacedRectangular.height < All_lines[f].Y) {
-        // Durum 1 eğer line başlangııc aynı x de ise
-        if (PlacedRectangular.X == All_lines[f].Start_point_X) {
-          //Durum 1.1 bitiş noktası dikdörtgenin dışında  ise
-          if (
-            PlacedRectangular.X + PlacedRectangular.width <
-            All_lines[f].Start_point_X
-          ) {
-            All_lines[f].Start_point_X =
-              PlacedRectangular.X + PlacedRectangular.width;
-          }
-          //Durum 1.2 bitiş noktası içinde veya bitişte
-          else {
-            All_lines[f].Y = -10;
-          }
-        }
-        // Durum 2 başlangıç dikdörtgenin içinde ise
-        else if (
-          All_lines[f].Start_point_X > PlacedRectangular.X &&
-          All_lines[f].Start_point_X <
-            PlacedRectangular.X + PlacedRectangular.width
-        ) {
-          //Durum 2.1 bitiş noktası dikdörtgenin dışında  ise
-          if (
-            PlacedRectangular.X + PlacedRectangular.width <
-            All_lines[f].Start_point_X
-          ) {
-            All_lines[f].Start_point_X =
-              PlacedRectangular.X + PlacedRectangular.width;
-          }
-          //Durum 2.2 bitiş noktası içinde veya bitişte
-          else {
-            All_lines[f].Y = -10;
-          }
-        }
-      }
-    }
-  }
-}
-
-function getBestLine(Will_placed_Rectangular) {
-  for (i = 0; i < All_lines.length; i++) {
-    if (
-      Will_placed_Rectangular.width <=
-      All_lines[i].End_point_X - All_lines[i].Start_point_X
-    ) {
-      Used_best_lines.push(All_lines[i]);
+function NewGetBestLine(Selected_Rect, Lines) {
+  for (i = 0; i < Lines.length; i++) {
+    if (Selected_Rect.width <= Lines[i].End_point_X - Lines[i].Start_point_X) {
       //console.log(JSON.parse(JSON.stringify(Used_best_lines)));
-      return All_lines[i];
+      return Lines[i];
     }
   }
 }
-function SortTheLines() {
-  All_lines.sort((a, b) => {
+function NewSortLines(Lines) {
+  var SortedLines = Lines.sort((a, b) => {
     if (a.Y == b.Y) {
       return a.Start_point_X - b.Start_point_X;
     }
     return b.Y - a.Y;
   });
+  return SortedLines;
+}
+
+function NewUpdateLines(PlacedRectangular, Lines) {
+  var PlacedRectangularY = PlacedRectangular.Y;
+
+  for (i = 0; i < PlacedRectangular.height + 1; i++) {
+    for (k = 0; k < Lines.length; k++) {
+      // Aynı y sırasında olanlar
+      if (PlacedRectangularY == Lines[k].Y) {
+        // Durum 1 tam oturursa
+        if (
+          PlacedRectangular.X == Lines[k].Start_point_X &&
+          PlacedRectangular.X + PlacedRectangular.width == Lines[k].End_point_X
+        ) {
+          Lines[k].Y = -100;
+          PlacedRectangularY = PlacedRectangularY + 1;
+          // Druum 2 sol tarafı kapalı sağ açık
+        } else if (
+          PlacedRectangular.X == Lines[k].Start_point_X &&
+          PlacedRectangular.X + PlacedRectangular.width < Lines[k].End_point_X
+        ) {
+          Lines[k].Start_point_X =
+            PlacedRectangular.X + PlacedRectangular.width;
+          PlacedRectangularY = PlacedRectangularY + 1;
+          // durum 3 sağ tarafı kapalı sol açık
+        } else if (
+          PlacedRectangular.X > Lines[k].Start_point_X &&
+          PlacedRectangular.X + PlacedRectangular.width == Lines[k].End_point_X
+        ) {
+          Lines[k].End_point_X = PlacedRectangular.X;
+          PlacedRectangularY = PlacedRectangularY + 1;
+          // durum 4 ortada her tarafı açıkta
+        } else if (
+          PlacedRectangular.X > Lines[k].Start_point_X &&
+          PlacedRectangular.X + PlacedRectangular.width < Lines[k].End_point_X
+        ) {
+          temp_End_point_X = Lines[k].End_point_X;
+          Lines[k].End_point_X = PlacedRectangular.X;
+          var CuttedLine = new All_line(
+            PlacedRectangular.X + PlacedRectangular.width,
+            temp_End_point_X,
+            Lines[k].Y
+          );
+          Lines.push(CuttedLine);
+          PlacedRectangularY = PlacedRectangularY + 1;
+        }
+      }
+    }
+  }
+  Lines = NewDeleteUnderLines(PlacedRectangular, Lines);
+  return Lines;
+}
+
+function NewDeleteUnderLines(PlacedRectangular, Lines) {
+  for (t = 0; t < PlacedRectangular.width + 1; t++) {
+    for (f = 0; f < Lines.length; f++) {
+      if (PlacedRectangular.Y + PlacedRectangular.height < Lines[f].Y) {
+        // Durum 1 eğer line başlangııc aynı x de ise
+        if (PlacedRectangular.X == Lines[f].Start_point_X) {
+          //Durum 1.1 bitiş noktası dikdörtgenin dışında  ise
+          if (
+            PlacedRectangular.X + PlacedRectangular.width <
+            Lines[f].Start_point_X
+          ) {
+            Lines[f].Start_point_X =
+              PlacedRectangular.X + PlacedRectangular.width;
+          }
+          //Durum 1.2 bitiş noktası içinde veya bitişte
+          else {
+            Lines[f].Y = -10;
+          }
+        }
+        // Durum 2 başlangıç dikdörtgenin içinde ise
+        else if (
+          Lines[f].Start_point_X > PlacedRectangular.X &&
+          Lines[f].Start_point_X < PlacedRectangular.X + PlacedRectangular.width
+        ) {
+          //Durum 2.1 bitiş noktası dikdörtgenin dışında  ise
+          if (
+            PlacedRectangular.X + PlacedRectangular.width <
+            Lines[f].Start_point_X
+          ) {
+            Lines[f].Start_point_X =
+              PlacedRectangular.X + PlacedRectangular.width;
+          }
+          //Durum 2.2 bitiş noktası içinde veya bitişte
+          else {
+            Lines[f].Y = -10;
+          }
+        }
+      }
+    }
+  }
+  return Lines;
 }
 
 class Rectangular {
