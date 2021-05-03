@@ -1,6 +1,15 @@
 // EmptY arraY for Rectangulars.
 let Rectangulars = [];
 
+//Genetic algorithm population
+let population;
+
+let stats;
+
+let stopCondition;
+let popmax;
+let mutationRate;
+
 // Bin corner border value.
 let Border_line_X = 800;
 
@@ -21,10 +30,13 @@ function setup() {
     );
   }
 
+  stats = createP("Stats");
+  stats.position(1000, 50);
+  stats.class("gen");
+
   stopCondition = 30;
   popmax = 10;
   mutationRate = 0.01;
-  console.log(Rectangulars)
 
   // Create a population with a target phrase, mutation rate, and population max
   population = new Population(mutationRate, popmax, Rectangulars, stopCondition);
@@ -56,6 +68,18 @@ function draw() {
   if (population.isFinished()) {
     noLoop();
   }
+
+  displayInfo();
+}
+
+function displayInfo() {
+
+  let statstext = "total generations:     " + population.getGenerations() + "<br>";
+  statstext += "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
+  statstext += "total population:      " + popmax + "<br>";
+  statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
+
+  stats.html(statstext);
 }
 
 // Function for resize Canvas according to Window dimensions.

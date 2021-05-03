@@ -102,6 +102,6 @@ class Population {
     for (let i = 0; i < this.population.length; i++) {
       total += this.population[i].fitness;
     }
-    return total / (this.population.length);
+    return -total / (this.population.length);
   }
 }
