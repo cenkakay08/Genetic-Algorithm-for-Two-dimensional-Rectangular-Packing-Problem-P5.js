@@ -5,7 +5,7 @@ let Rectangulars = [];
 let Border_line_X = 800;
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 150;
+let Number_for_random_rectangulars = 100;
 
 function setup() {
   // Canvas created according to Window dimensions.
@@ -20,11 +20,16 @@ function setup() {
       i
     );
   }
+  let arrayCopy = JSON.parse(JSON.stringify(Rectangulars));
+
   var button2 = createButton("NEW bottom left");
   button2.position(windowWidth - 300, windowHeight - 300);
   button2.mousePressed(() =>
     NewBottomLeftFunction(Rectangulars, Border_line_X, windowHeight)
   );
+  var button = createButton("NEW Easy Order");
+  button.position(windowWidth - 400, windowHeight - 400);
+  button.mousePressed(() => EasyOrder(arrayCopy));
 }
 
 function draw() {
@@ -188,6 +193,41 @@ function NewDeleteUnderLines(PlacedRectangular, Lines) {
     }
   }
   return Lines;
+}
+
+function EasyOrder(RectangularsCopy) {
+  var PlacementY = windowHeight;
+  var PlacementX = 0;
+  var BinWidth = 800;
+  var HeightsRectangularY = 0;
+  for (i = 0; i < RectangularsCopy.length; i++) {
+    if (PlacementX + RectangularsCopy[i].width <= BinWidth) {
+      RectangularsCopy[i].X = PlacementX;
+      RectangularsCopy[i].Y = PlacementY - RectangularsCopy[i].height;
+      PlacementX = RectangularsCopy[i].width + PlacementX;
+      if (RectangularsCopy[i].height > HeightsRectangularY) {
+        HeightsRectangularY = RectangularsCopy[i].height;
+      }
+    } else {
+      PlacementX = 0;
+      PlacementY = PlacementY - HeightsRectangularY;
+      RectangularsCopy[i].X = PlacementX;
+      RectangularsCopy[i].Y = PlacementY - RectangularsCopy[i].height;
+      PlacementX = RectangularsCopy[i].width + PlacementX;
+      HeightsRectangularY = 0;
+    }
+  }
+  var ratio = parseInt((RectangularsCopy.length / 100) * 20);
+  var Score = 9999;
+  for (i = RectangularsCopy.length - ratio; i < RectangularsCopy.length; i++) {
+    var tempScore = RectangularsCopy[i].Y;
+    if (tempScore < Score) {
+      Score = tempScore;
+    }
+  }
+  console.log(Score);
+  console.log(RectangularsCopy);
+  return Score;
 }
 
 class Rectangular {
