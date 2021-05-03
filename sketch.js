@@ -20,7 +20,9 @@ function setup() {
       i
     );
   }
-  var DeepCopyRect = deepCopyFunction(Rectangulars);
+  var DeepCopyRect = Rectangulars.map((a) =>
+    Object.assign(new Rectangular(), a)
+  );
   var button2 = createButton("NEW bottom left");
   button2.position(windowWidth - 300, windowHeight - 300);
   button2.mousePressed(() =>
@@ -226,24 +228,17 @@ function EasyOrder(RectangularsCopy) {
   }
   console.log("Score:" + Score);
   console.log(RectangularsCopy);
+  // shuffleArray(RectangularsCopy);
   // Alttaki satırı silince ekranda gösterilen dikdörtgenler sonuca göre çizdirilir.
-  //Rectangulars = RectangularsCopy;
+  // Rectangulars = RectangularsCopy;
   return Score;
 }
-
-function deepCopyFunction(inputArray) {
-  var CopiedArayObject = [];
-  for (i = 0; i < inputArray.length; i++) {
-    CopiedArayObject[i] = new Rectangular(
-      inputArray[i].width,
-      inputArray[i].height,
-      inputArray[i].X,
-      inputArray[i].Y,
-      i
-    );
+/* function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  return CopiedArayObject;
-}
+} */
 
 class Rectangular {
   constructor(width, height, X, Y, id) {
