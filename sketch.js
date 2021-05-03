@@ -1,6 +1,6 @@
 // EmptY arraY for Rectangulars.
 let Rectangulars = [];
-
+let DeepCopyRect = [];
 // Bin corner border value.
 let Border_line_X = 800;
 
@@ -20,8 +20,7 @@ function setup() {
       i
     );
   }
-  let arrayCopy = JSON.parse(JSON.stringify(Rectangulars));
-
+  var DeepCopyRect = deepCopyFunction(Rectangulars);
   var button2 = createButton("NEW bottom left");
   button2.position(windowWidth - 300, windowHeight - 300);
   button2.mousePressed(() =>
@@ -29,7 +28,7 @@ function setup() {
   );
   var button = createButton("NEW Easy Order");
   button.position(windowWidth - 400, windowHeight - 400);
-  button.mousePressed(() => EasyOrder(arrayCopy));
+  button.mousePressed(() => EasyOrder(DeepCopyRect));
 }
 
 function draw() {
@@ -227,7 +226,23 @@ function EasyOrder(RectangularsCopy) {
   }
   console.log(Score);
   console.log(RectangularsCopy);
+  // Alttaki satırı silince ekranda gösterilen dikdörtgenler sonuca göre çizdirilir.
+  // Rectangulars = RectangularsCopy;
   return Score;
+}
+
+function deepCopyFunction(inputArray) {
+  var CopiedArayObject = [];
+  for (i = 0; i < inputArray.length; i++) {
+    CopiedArayObject[i] = new Rectangular(
+      inputArray[i].width,
+      inputArray[i].height,
+      inputArray[i].X,
+      inputArray[i].Y,
+      i
+    );
+  }
+  return CopiedArayObject;
 }
 
 class Rectangular {
