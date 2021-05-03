@@ -1,6 +1,6 @@
 // EmptY arraY for Rectangulars.
 let Rectangulars = [];
-let DeepCopyRect = [];
+
 // Bin corner border value.
 let Border_line_X = 800;
 
@@ -224,10 +224,10 @@ function EasyOrder(RectangularsCopy) {
       Score = tempScore;
     }
   }
-  console.log(Score);
+  console.log("Score:" + Score);
   console.log(RectangularsCopy);
   // Alttaki satırı silince ekranda gösterilen dikdörtgenler sonuca göre çizdirilir.
-  // Rectangulars = RectangularsCopy;
+  //Rectangulars = RectangularsCopy;
   return Score;
 }
 
