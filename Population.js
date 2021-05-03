@@ -30,7 +30,7 @@ class Population {
   naturalSelection() {
     this.matingPool = [];
 
-    let maxFitness = 0;
+    let maxFitness = this.population[0].fitness;
     for (let i = 0; i < this.population.length; i++) {
         
       if (this.population[i].fitness > maxFitness) {
