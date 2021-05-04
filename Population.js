@@ -82,7 +82,7 @@ class Population {
 
     for (let i = 0; i < this.population.length; i++) {
       if (this.population[i].fitness < bestScore) {
-        this.best = this.population[index];
+        this.best = this.population[i];
       }
     }
   }
