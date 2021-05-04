@@ -3,6 +3,7 @@ let Rectangulars = [];
 let DeepCopyRect;
 let copyPopulation;
 let globalStack = 0;
+let currentBest;
 //Genetic algorithm population
 let population;
 let GlobalScore = 0;
@@ -16,7 +17,7 @@ let mutationRate;
 let Border_line_X = 800;
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 100;
+let Number_for_random_rectangulars = 75;
 
 function setup() {
   // Canvas created according to Window dimensions.
@@ -74,18 +75,23 @@ function draw() {
   population.calcFitness();
 
   population.evaluate();
-  if (EasyOrder(population.getBest()) > GlobalScore) {
-    GlobalScore = EasyOrder(population.getBest());
+  currentBest = EasyOrder(population.getBest());
+  if (currentBest > GlobalScore) {
+    GlobalScore = currentBest;
+
     Rectangulars = population
       .getBest()
       .map((a) => Object.assign(new Rectangular(), a));
+
+    //animation
   }
   /*  if (population.isFinished()) {
     console.log("buraya ulaştım");
     noLoop();
   } */
   globalStack++;
-
+  line(0, GlobalScore, Border_line_X, GlobalScore);
+  strokeWeight(1);
   if (globalStack == stopCondition + 1) {
     noLoop();
     globalStack = 0;
@@ -311,13 +317,19 @@ class Rectangular {
     this.X = X;
     this.Y = Y;
     this.id = id;
+    this.color = color(
+      Math.floor(Math.random() * 205) + 50,
+      Math.floor(Math.random() * 205) + 50,
+      Math.floor(Math.random() * 205) + 50
+    );
   }
   show() {
     stroke(0);
     strokeWeight(1);
-    noFill();
+    fill(this.color);
     rect(this.X, this.Y, this.width, this.height);
     textAlign(CENTER, CENTER);
+    fill(color("black"));
     stroke(0);
     strokeWeight(1);
     text(this.id, this.X + this.width / 2, this.Y + this.height / 2);
