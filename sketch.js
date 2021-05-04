@@ -91,11 +91,12 @@ function draw() {
   // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
-  displayInfo();
 
   if( !firstTimeDraw && population !== undefined) {
       genetic();
   }
+
+  displayInfo();
 
   if (globalStack == stopCondition + 1) {
     noLoop();
@@ -113,7 +114,7 @@ function start() {
     DeepCopyRect,
     stopCondition
   );
-  
+
   rectangularDrawIndex = 0;
   firstTimeDraw = false;
   //copyPopulation = Object.assign({}, population);
@@ -127,7 +128,7 @@ function genetic() {
     population.calcFitness();
 
     population.evaluate();
-    if (population.getBest().fitness < GlobalScore) {
+    if (population.getBest().fitness > GlobalScore) {
       GlobalScore = population.getBest().fitness;
       Rectangulars = population
         .getBest().genes
@@ -145,6 +146,8 @@ function displayInfo() {
     "total generations:     " + population.getGenerations() + "<br>";
   statstext +=
     "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
+  statstext +=
+    "best fitness:       " + population.getBest().fitness + "<br>";
   statstext += "total population:      " + popmax + "<br>";
   statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
   }

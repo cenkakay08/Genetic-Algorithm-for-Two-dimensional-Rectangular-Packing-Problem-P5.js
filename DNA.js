@@ -25,7 +25,7 @@ class DNA {
     //Calculate Fitness Score
     calcFitness() {
         let score = EasyOrder(this.genes);
-        this.fitness = -score;
+        this.fitness = score;
     }
 
     //Croosover
