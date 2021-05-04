@@ -79,7 +79,7 @@ function draw() {
   if (globalStack == stopCondition + 1) {
     noLoop();
     globalStack = 0;
-    population = copyPopulation;
+    //population = copyPopulation;
   }
 
   // Generate mating pool
@@ -91,7 +91,7 @@ function start() {
     Rectangulars,
     stopCondition
   );
-  copyPopulation = Object.assign({}, population);
+  //copyPopulation = Object.assign({}, population);
   loop();
 }
 function displayInfo() {
