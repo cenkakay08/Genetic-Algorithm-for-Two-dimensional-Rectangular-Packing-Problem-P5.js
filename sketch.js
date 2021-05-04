@@ -1,6 +1,8 @@
 // EmptY arraY for Rectangulars.
 let Rectangulars = [];
 let DeepCopyRect;
+let copyPopulation;
+let globalStack = 0;
 //Genetic algorithm population
 let population;
 let GlobalScore = 0;
@@ -41,19 +43,13 @@ function setup() {
   stopCondition = 100;
   popmax = 100;
   mutationRate = 0.01;
-
+  noLoop();
   // Create a population with a target phrase, mutation rate, and population max
-  population = new Population(
-    mutationRate,
-    popmax,
-    Rectangulars,
-    stopCondition
-  );
 }
 
 function draw() {
   // Background color
-  displayInfo();
+  //
   background("#E2F0FF");
 
   // Draw the all Rectangulars
@@ -64,9 +60,8 @@ function draw() {
   // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
-  if (!isStarted) {
-    noLoop();
-  }
+  displayInfo();
+
   population.naturalSelection();
   //Create next generation
   population.generate();
@@ -74,14 +69,29 @@ function draw() {
   population.calcFitness();
 
   population.evaluate();
-  if (population.isFinished()) {
+
+  /*  if (population.isFinished()) {
+    console.log("buraya ulaştım");
     noLoop();
+  } */
+  globalStack++;
+  console.log(globalStack);
+  if (globalStack == stopCondition + 1) {
+    noLoop();
+    globalStack = 0;
+    population = copyPopulation;
   }
 
   // Generate mating pool
 }
 function start() {
-  isStarted = true;
+  population = new Population(
+    mutationRate,
+    popmax,
+    Rectangulars,
+    stopCondition
+  );
+  copyPopulation = Object.assign({}, population);
   loop();
 }
 function displayInfo() {
