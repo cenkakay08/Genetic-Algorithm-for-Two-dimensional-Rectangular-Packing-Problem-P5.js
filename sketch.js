@@ -1,5 +1,14 @@
 // EmptY arraY for Rectangulars.
 let Rectangulars = [];
+let DeepCopyRect;
+//Genetic algorithm population
+let population;
+let GlobalScore = 0;
+let stats;
+let isStarted = false;
+let stopCondition;
+let popmax;
+let mutationRate;
 
 // Bin corner border value.
 let Border_line_X = 800;
@@ -20,21 +29,31 @@ function setup() {
       i
     );
   }
-  var DeepCopyRect = Rectangulars.map((a) =>
-    Object.assign(new Rectangular(), a)
+  DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
+  button = createButton("Start");
+  button.position(100, 100);
+  button.mousePressed(() => start());
+
+  stats = createP("Stats");
+  stats.position(1000, 50);
+  stats.class("gen");
+
+  stopCondition = 100;
+  popmax = 100;
+  mutationRate = 0.01;
+
+  // Create a population with a target phrase, mutation rate, and population max
+  population = new Population(
+    mutationRate,
+    popmax,
+    Rectangulars,
+    stopCondition
   );
-  var button2 = createButton("NEW bottom left");
-  button2.position(windowWidth - 300, windowHeight - 300);
-  button2.mousePressed(() =>
-    NewBottomLeftFunction(Rectangulars, Border_line_X, windowHeight)
-  );
-  var button = createButton("NEW Easy Order");
-  button.position(windowWidth - 400, windowHeight - 400);
-  button.mousePressed(() => EasyOrder(DeepCopyRect));
 }
 
 function draw() {
   // Background color
+  displayInfo();
   background("#E2F0FF");
 
   // Draw the all Rectangulars
@@ -45,6 +64,35 @@ function draw() {
   // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
+  if (!isStarted) {
+    noLoop();
+  }
+  population.naturalSelection();
+  //Create next generation
+  population.generate();
+  // Calculate fitness
+  population.calcFitness();
+
+  population.evaluate();
+  if (population.isFinished()) {
+    noLoop();
+  }
+
+  // Generate mating pool
+}
+function start() {
+  isStarted = true;
+  loop();
+}
+function displayInfo() {
+  let statstext =
+    "total generations:     " + population.getGenerations() + "<br>";
+  statstext +=
+    "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
+  statstext += "total population:      " + popmax + "<br>";
+  statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
+
+  stats.html(statstext);
 }
 
 // Function for resize Canvas according to Window dimensions.
@@ -52,13 +100,15 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function NewBottomLeftFunction(RectangelArrays, BinWidth, BinHeight) {
+function NewBottomLeftFunction(RectangelArrays) {
+  var BinWidth = 600;
+  var BinHeight = 800;
   var Lines = [];
   for (i = 0; i < BinHeight; i++) {
     Lines[i] = new All_line(0, BinWidth, i);
   }
   Lines = NewSortLines(Lines);
-  console.log(RectangelArrays.length);
+
   for (z = 0; z < RectangelArrays.length; z++) {
     var bestLine = NewGetBestLine(RectangelArrays[z], Lines);
     RectangelArrays[z].X = bestLine.Start_point_X;
@@ -79,8 +129,7 @@ function NewGetScore(RectangelArrays) {
       Score = tempScore;
     }
   }
-  console.log(Score);
-  console.log(RectangelArrays);
+
   return Score;
 }
 
@@ -226,19 +275,12 @@ function EasyOrder(RectangularsCopy) {
       Score = tempScore;
     }
   }
-  console.log("Score:" + Score);
-  console.log(RectangularsCopy);
+
   // shuffleArray(RectangularsCopy);
   // Alttaki satırı silince ekranda gösterilen dikdörtgenler sonuca göre çizdirilir.
   // Rectangulars = RectangularsCopy;
   return Score;
 }
-/* function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-} */
 
 class Rectangular {
   constructor(width, height, X, Y, id) {
