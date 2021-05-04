@@ -32,6 +32,11 @@ function setup() {
     );
   }
   DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
+
+  sliderPopulation = createSlider(0, 360, 60, 40);
+  sliderPopulation.position(400, 400);
+  sliderPopulation.style("width", "80px");
+
   button = createButton("Start");
   button.position(100, 100);
   button.mousePressed(() => start());
@@ -40,7 +45,7 @@ function setup() {
   stats.position(1000, 50);
   stats.class("gen");
 
-  stopCondition = 100;
+  stopCondition = 1000;
   popmax = 100;
   mutationRate = 0.01;
   noLoop();
@@ -69,16 +74,22 @@ function draw() {
   population.calcFitness();
 
   population.evaluate();
-
+  if (EasyOrder(population.getBest()) > GlobalScore) {
+    GlobalScore = EasyOrder(population.getBest());
+    Rectangulars = population
+      .getBest()
+      .map((a) => Object.assign(new Rectangular(), a));
+  }
   /*  if (population.isFinished()) {
     console.log("buraya ulaştım");
     noLoop();
   } */
   globalStack++;
-  console.log(globalStack);
+
   if (globalStack == stopCondition + 1) {
     noLoop();
     globalStack = 0;
+    GlobalScore = 0;
     //population = copyPopulation;
   }
 
@@ -88,7 +99,7 @@ function start() {
   population = new Population(
     mutationRate,
     popmax,
-    Rectangulars,
+    DeepCopyRect,
     stopCondition
   );
   //copyPopulation = Object.assign({}, population);
@@ -111,8 +122,8 @@ function windowResized() {
 }
 
 function NewBottomLeftFunction(RectangelArrays) {
-  var BinWidth = 600;
-  var BinHeight = 800;
+  var BinWidth = Border_line_X;
+  var BinHeight = windowHeight;
   var Lines = [];
   for (i = 0; i < BinHeight; i++) {
     Lines[i] = new All_line(0, BinWidth, i);
@@ -258,7 +269,7 @@ function NewDeleteUnderLines(PlacedRectangular, Lines) {
 function EasyOrder(RectangularsCopy) {
   var PlacementY = windowHeight;
   var PlacementX = 0;
-  var BinWidth = 800;
+  var BinWidth = Border_line_X;
   var HeightsRectangularY = 0;
   for (i = 0; i < RectangularsCopy.length; i++) {
     if (PlacementX + RectangularsCopy[i].width <= BinWidth) {
@@ -274,7 +285,7 @@ function EasyOrder(RectangularsCopy) {
       RectangularsCopy[i].X = PlacementX;
       RectangularsCopy[i].Y = PlacementY - RectangularsCopy[i].height;
       PlacementX = RectangularsCopy[i].width + PlacementX;
-      HeightsRectangularY = 0;
+      HeightsRectangularY = RectangularsCopy[i].height;
     }
   }
   var ratio = parseInt((RectangularsCopy.length / 100) * 20);
@@ -289,6 +300,7 @@ function EasyOrder(RectangularsCopy) {
   // shuffleArray(RectangularsCopy);
   // Alttaki satırı silince ekranda gösterilen dikdörtgenler sonuca göre çizdirilir.
   // Rectangulars = RectangularsCopy;
+
   return Score;
 }
 
