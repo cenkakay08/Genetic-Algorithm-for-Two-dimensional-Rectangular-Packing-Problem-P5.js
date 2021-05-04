@@ -33,7 +33,8 @@ function setup() {
       Math.floor(Math.random() * (100 - 10 + 1)) + 10,
       Math.floor(Math.random() * (windowWidth - 100 - 1 + 1)) + 1,
       Math.floor(Math.random() * (windowHeight - 100 - 1 + 1)) + 1,
-      i
+      i,
+      color(Math.floor(Math.random() * 205) + 50,Math.floor(Math.random() * 205) + 50,Math.floor(Math.random() * 205) + 50)
     );
   }
   DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
@@ -112,6 +113,9 @@ function start() {
     DeepCopyRect,
     stopCondition
   );
+  
+  rectangularDrawIndex = 0;
+  firstTimeDraw = false;
   //copyPopulation = Object.assign({}, population);
   loop();
 }
@@ -336,21 +340,23 @@ function EasyOrder(RectangularsCopy) {
 }
 
 class Rectangular {
-  constructor(width, height, X, Y, id) {
+  constructor(width, height, X, Y, id, c) {
     this.width = width;
     this.height = height;
     this.X = X;
     this.Y = Y;
     this.id = id;
+    this.color = c;
   }
   show(y) {
       stroke(0);
       strokeWeight(1);
-      noFill();
+      fill(this.color);
       rect(this.X, y, this.width, this.height);
       textAlign(CENTER, CENTER);
       stroke(0);
       strokeWeight(1);
+      fill(color('black'));
       text(this.id, this.X + this.width / 2, y + this.height / 2);
   }
 }
