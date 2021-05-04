@@ -25,7 +25,6 @@ class DNA {
     //Calculate Fitness Score
     calcFitness() {
         let score = NewBottomLeftFunction(this.genes);
-
         this.fitness = -score;
     }
 

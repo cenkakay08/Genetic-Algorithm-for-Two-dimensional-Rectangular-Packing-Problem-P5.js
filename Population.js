@@ -9,7 +9,7 @@ class Population {
     this.perfectScore = 1;
     this.stopCondition = stopCondition;
 
-    this.best = "";
+    this.best;
 
     this.population = [];
     for (let i = 0; i < num; i++) {
@@ -74,17 +74,17 @@ class Population {
   }
 
   evaluate() {
-    let worldrecord = 0.0;
-    let index = 0;
-
-    for (let i = 0; i < this.population.length; i++) {
-      if (this.population[i].fitness > worldrecord) {
-        index = i;
-        worldrecord = this.population[i].fitness;
-      }
+    let bestScore = 0;
+    
+    if(this.best !== undefined) {
+      bestScore = this.best.fitness;
     }
 
-    this.best = this.population[index].genes.map(String);
+    for (let i = 0; i < this.population.length; i++) {
+      if (this.population[i].fitness < bestScore) {
+        this.best = this.population[index];
+      }
+    }
   }
 
   isFinished() {

@@ -1,14 +1,17 @@
 // EmptY arraY for Rectangulars.
 let Rectangulars = [];
-
+let DeepCopyRect;
+let copyPopulation;
+let globalStack = 0;
 //Genetic algorithm population
 let population;
-
+let GlobalScore = 0;
 let stats;
-
+let isStarted = false;
 let stopCondition;
 let popmax;
 let mutationRate;
+let currentBestScore = 0;
 
 // Bin corner border value.
 let Border_line_X = 800;
@@ -29,33 +32,36 @@ function setup() {
       i
     );
   }
+  DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
+  button = createButton("Start");
+  button.position(100, 100);
+  button.mousePressed(() => start());
 
   stats = createP("Stats");
   stats.position(1000, 50);
   stats.class("gen");
 
-  stopCondition = 30;
-  popmax = 10;
+  stopCondition = 100;
+  popmax = 100;
   mutationRate = 0.01;
+  noLoop();
 
-  // Create a population with a target phrase, mutation rate, and population max
-  population = new Population(mutationRate, popmax, Rectangulars, stopCondition);
+  // Draw the all Rectangulars
+  
 }
 
 function draw() {
   // Background color
+  //
   background("#E2F0FF");
 
-  // Draw the all Rectangulars
-  for (i = 0; i < Rectangulars.length; i++) {
-    Rectangulars[i].show();
-  }
+  
 
   // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
+  displayInfo();
 
-  // Generate mating pool
   population.naturalSelection();
   //Create next generation
   population.generate();
@@ -64,18 +70,42 @@ function draw() {
 
   population.evaluate();
 
-  // If we found the target phrase, stop
-  if (population.isFinished()) {
-    noLoop();
+  console.log(population.getBest().fitness !== undefined);
+
+  if(population.getBest().fitness !== undefined) {
+    for (i = 0; i < Rectangulars.length; i++) {
+      population.getBest().genes[i].show();
+    }
+  }else {
+    for (i = 0; i < Rectangulars.length; i++) {
+      Rectangulars[i].show();
+    }
   }
 
-  displayInfo();
+  globalStack++;
+  if (globalStack == stopCondition + 1) {
+    noLoop();
+    globalStack = 0;
+    //population = copyPopulation;
+  }
+
+  // Generate mating pool
 }
-
+function start() {
+  population = new Population(
+    mutationRate,
+    popmax,
+    Rectangulars,
+    stopCondition
+  );
+  //copyPopulation = Object.assign({}, population);
+  loop();
+}
 function displayInfo() {
-
-  let statstext = "total generations:     " + population.getGenerations() + "<br>";
-  statstext += "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
+  let statstext =
+    "total generations:     " + population.getGenerations() + "<br>";
+  statstext +=
+    "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
   statstext += "total population:      " + popmax + "<br>";
   statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
 
@@ -95,6 +125,7 @@ function NewBottomLeftFunction(RectangelArrays) {
     Lines[i] = new All_line(0, BinWidth, i);
   }
   Lines = NewSortLines(Lines);
+
   for (z = 0; z < RectangelArrays.length; z++) {
     var bestLine = NewGetBestLine(RectangelArrays[z], Lines);
     RectangelArrays[z].X = bestLine.Start_point_X;
@@ -115,6 +146,7 @@ function NewGetScore(RectangelArrays) {
       Score = tempScore;
     }
   }
+
   return Score;
 }
 
@@ -228,6 +260,43 @@ function NewDeleteUnderLines(PlacedRectangular, Lines) {
     }
   }
   return Lines;
+}
+
+function EasyOrder(RectangularsCopy) {
+  var PlacementY = windowHeight;
+  var PlacementX = 0;
+  var BinWidth = 800;
+  var HeightsRectangularY = 0;
+  for (i = 0; i < RectangularsCopy.length; i++) {
+    if (PlacementX + RectangularsCopy[i].width <= BinWidth) {
+      RectangularsCopy[i].X = PlacementX;
+      RectangularsCopy[i].Y = PlacementY - RectangularsCopy[i].height;
+      PlacementX = RectangularsCopy[i].width + PlacementX;
+      if (RectangularsCopy[i].height > HeightsRectangularY) {
+        HeightsRectangularY = RectangularsCopy[i].height;
+      }
+    } else {
+      PlacementX = 0;
+      PlacementY = PlacementY - HeightsRectangularY;
+      RectangularsCopy[i].X = PlacementX;
+      RectangularsCopy[i].Y = PlacementY - RectangularsCopy[i].height;
+      PlacementX = RectangularsCopy[i].width + PlacementX;
+      HeightsRectangularY = 0;
+    }
+  }
+  var ratio = parseInt((RectangularsCopy.length / 100) * 20);
+  var Score = 9999;
+  for (i = RectangularsCopy.length - ratio; i < RectangularsCopy.length; i++) {
+    var tempScore = RectangularsCopy[i].Y;
+    if (tempScore < Score) {
+      Score = tempScore;
+    }
+  }
+
+  // shuffleArray(RectangularsCopy);
+  // Alttaki satırı silince ekranda gösterilen dikdörtgenler sonuca göre çizdirilir.
+  // Rectangulars = RectangularsCopy;
+  return Score;
 }
 
 class Rectangular {
