@@ -12,6 +12,11 @@ let stopCondition;
 let popmax;
 let mutationRate;
 
+let Y = -200;
+let rectangularDrawIndex = 0;
+
+let firstTimeDraw = false;
+
 // Bin corner border value.
 let Border_line_X = 800;
 
@@ -48,7 +53,6 @@ function setup() {
   stopCondition = 1000;
   popmax = 100;
   mutationRate = 0.01;
-  noLoop();
   // Create a population with a target phrase, mutation rate, and population max
 }
 
@@ -57,34 +61,40 @@ function draw() {
   //
   background("#E2F0FF");
 
-  // Draw the all Rectangulars
-  for (i = 0; i < Rectangulars.length; i++) {
-    Rectangulars[i].show();
+  if(rectangularDrawIndex >= Rectangulars.length) {
+    firstTimeDraw = false;
   }
+
+  if(firstTimeDraw) {
+
+    for (i = 0; i < rectangularDrawIndex; i++) {
+      Rectangulars[i].show(Rectangulars[i].Y);
+    }
+
+    Rectangulars[rectangularDrawIndex].show(Y);
+
+    Y = Y+100;
+    
+  if(Y >= Rectangulars[rectangularDrawIndex].Y) {
+    rectangularDrawIndex++;
+    Y = 0;
+  }
+  } else {
+    // Draw the all Rectangulars
+    for (i = 0; i < Rectangulars.length; i++) {
+      Rectangulars[i].show(Rectangulars[i].Y);
+    }
+  }
+
 
   // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
   displayInfo();
 
-  population.naturalSelection();
-  //Create next generation
-  population.generate();
-  // Calculate fitness
-  population.calcFitness();
-
-  population.evaluate();
-  if (population.getBest().fitness < GlobalScore) {
-    GlobalScore = population.getBest().fitness;
-    Rectangulars = population
-      .getBest().genes
-      .map((a) => Object.assign(new Rectangular(), a));
+  if( !firstTimeDraw && population !== undefined) {
+      genetic();
   }
-  /*  if (population.isFinished()) {
-    console.log("buraya ulaştım");
-    noLoop();
-  } */
-  globalStack++;
 
   if (globalStack == stopCondition + 1) {
     noLoop();
@@ -105,14 +115,35 @@ function start() {
   //copyPopulation = Object.assign({}, population);
   loop();
 }
+function genetic() {
+  population.naturalSelection();
+  //Create next generation
+    population.generate();
+  // Calculate fitness
+    population.calcFitness();
+
+    population.evaluate();
+    if (population.getBest().fitness < GlobalScore) {
+      GlobalScore = population.getBest().fitness;
+      Rectangulars = population
+        .getBest().genes
+        .map((a) => Object.assign(new Rectangular(), a));
+
+        firstTimeDraw = true;
+        rectangularDrawIndex = 0;
+    }
+    globalStack++;
+}
 function displayInfo() {
-  let statstext =
+  let statstext = "";
+  if(population !== undefined) {
+  statstext =
     "total generations:     " + population.getGenerations() + "<br>";
   statstext +=
     "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
   statstext += "total population:      " + popmax + "<br>";
   statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
-
+  }
   stats.html(statstext);
 }
 
@@ -312,15 +343,15 @@ class Rectangular {
     this.Y = Y;
     this.id = id;
   }
-  show() {
-    stroke(0);
-    strokeWeight(1);
-    noFill();
-    rect(this.X, this.Y, this.width, this.height);
-    textAlign(CENTER, CENTER);
-    stroke(0);
-    strokeWeight(1);
-    text(this.id, this.X + this.width / 2, this.Y + this.height / 2);
+  show(y) {
+      stroke(0);
+      strokeWeight(1);
+      noFill();
+      rect(this.X, y, this.width, this.height);
+      textAlign(CENTER, CENTER);
+      stroke(0);
+      strokeWeight(1);
+      text(this.id, this.X + this.width / 2, y + this.height / 2);
   }
 }
 class All_line {
