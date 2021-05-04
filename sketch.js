@@ -16,6 +16,9 @@ let Y = -200;
 let rectangularDrawIndex = 0;
 
 let firstTimeDraw = false;
+let isWait = false;
+
+let waitTime = 100;
 
 // Bin corner border value.
 let Border_line_X = 800;
@@ -64,6 +67,8 @@ function draw() {
 
   if(rectangularDrawIndex >= Rectangulars.length) {
     firstTimeDraw = false;
+    rectangularDrawIndex = 0;
+    isWait = true;
   }
 
   if(firstTimeDraw) {
@@ -87,12 +92,20 @@ function draw() {
     }
   }
 
+  if(!firstTimeDraw && isWait) {
+    console.log("asd")
+    if(waitTime <= 0) {
+      isWait = false;
+      waitTime = 100;
+    }
+    waitTime--;
+  }
 
   // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
 
-  if( !firstTimeDraw && population !== undefined) {
+  if( !firstTimeDraw && population !== undefined && !isWait) {
       genetic();
   }
 
@@ -117,6 +130,7 @@ function start() {
 
   rectangularDrawIndex = 0;
   firstTimeDraw = false;
+  waitTime = 100;
   //copyPopulation = Object.assign({}, population);
   loop();
 }
@@ -135,7 +149,6 @@ function genetic() {
         .map((a) => Object.assign(new Rectangular(), a));
 
         firstTimeDraw = true;
-        rectangularDrawIndex = 0;
     }
     globalStack++;
 }
