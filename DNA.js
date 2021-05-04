@@ -24,7 +24,7 @@ class DNA {
 
     //Calculate Fitness Score
     calcFitness() {
-        let score = NewBottomLeftFunction(this.genes);
+        let score = EasyOrder(this.genes);
         this.fitness = -score;
     }
 
