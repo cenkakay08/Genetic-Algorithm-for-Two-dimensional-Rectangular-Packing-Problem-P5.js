@@ -108,7 +108,8 @@ function draw() {
   if( !firstTimeDraw && population !== undefined && !isWait) {
       genetic();
   }
-
+  line(0, GlobalScore, Border_line_X, GlobalScore);
+  strokeWeight(1);
   displayInfo();
 
   if (globalStack == stopCondition + 1) {
@@ -143,6 +144,8 @@ function genetic() {
 
     population.evaluate();
     if (population.getBest().fitness > GlobalScore) {
+      console.log(GlobalScore);
+      console.log(population.getBest().fitness);
       GlobalScore = population.getBest().fitness;
       Rectangulars = population
         .getBest().genes
