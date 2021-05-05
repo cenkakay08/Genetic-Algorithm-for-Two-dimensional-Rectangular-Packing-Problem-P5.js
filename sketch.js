@@ -17,7 +17,7 @@ let mutationRate;
 let Border_line_X = 800;
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 75;
+let Number_for_random_rectangulars = 100;
 
 function setup() {
   // Canvas created according to Window dimensions.
@@ -46,8 +46,8 @@ function setup() {
   stats.position(1000, 50);
   stats.class("gen");
 
-  stopCondition = 1000;
-  popmax = 100;
+  stopCondition = 10000;
+  popmax = 10000;
   mutationRate = 0.01;
   noLoop();
   // Create a population with a target phrase, mutation rate, and population max
@@ -62,10 +62,11 @@ function draw() {
   for (i = 0; i < Rectangulars.length; i++) {
     Rectangulars[i].show();
   }
-
-  // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
+  // Draw corner border line
+  line(0, GlobalScore, Border_line_X, GlobalScore);
+  strokeWeight(1);
   displayInfo();
 
   population.naturalSelection();
@@ -90,8 +91,7 @@ function draw() {
     noLoop();
   } */
   globalStack++;
-  line(0, GlobalScore, Border_line_X, GlobalScore);
-  strokeWeight(1);
+
   if (globalStack == stopCondition + 1) {
     noLoop();
     globalStack = 0;
@@ -294,9 +294,9 @@ function EasyOrder(RectangularsCopy) {
       HeightsRectangularY = RectangularsCopy[i].height;
     }
   }
-  var ratio = parseInt((RectangularsCopy.length / 100) * 20);
+
   var Score = 9999;
-  for (i = RectangularsCopy.length - ratio; i < RectangularsCopy.length; i++) {
+  for (var i = 0; i < RectangularsCopy.length; i++) {
     var tempScore = RectangularsCopy[i].Y;
     if (tempScore < Score) {
       Score = tempScore;
