@@ -6,6 +6,7 @@ let globalStack = 0;
 //Genetic algorithm population
 let population;
 let GlobalScore = 0;
+let currentBest;
 let stats;
 let isStarted = false;
 let stopCondition;
@@ -143,16 +144,17 @@ function genetic() {
     population.calcFitness();
 
     population.evaluate();
-    if (population.getBest().fitness > GlobalScore) {
-      console.log(GlobalScore);
-      console.log(population.getBest().fitness);
-      GlobalScore = population.getBest().fitness;
-      Rectangulars = population
-        .getBest().genes
-        .map((a) => Object.assign(new Rectangular(), a));
+    currentBest = EasyOrder(population.getBest());
+  if (currentBest > GlobalScore) {
+    GlobalScore = currentBest;
 
-        firstTimeDraw = true;
-    }
+    Rectangulars = population
+      .getBest()
+      .map((a) => Object.assign(new Rectangular(), a));
+
+    //animation
+    firstTimeDraw = true;
+  }
     globalStack++;
 }
 function displayInfo() {
@@ -163,7 +165,7 @@ function displayInfo() {
   statstext +=
     "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
   statstext +=
-    "best fitness:       " + population.getBest().fitness + "<br>";
+    "best fitness:       " + GlobalScore + "<br>";
   statstext += "total population:      " + popmax + "<br>";
   statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
   }
@@ -342,9 +344,8 @@ function EasyOrder(RectangularsCopy) {
       HeightsRectangularY = RectangularsCopy[i].height;
     }
   }
-  var ratio = parseInt((RectangularsCopy.length / 100) * 20);
   var Score = 9999;
-  for (i = RectangularsCopy.length - ratio; i < RectangularsCopy.length; i++) {
+  for (i = 0; i < RectangularsCopy.length; i++) {
     var tempScore = RectangularsCopy[i].Y;
     if (tempScore < Score) {
       Score = tempScore;

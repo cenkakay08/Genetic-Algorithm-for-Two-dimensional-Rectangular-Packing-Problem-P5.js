@@ -74,18 +74,17 @@ class Population {
   }
 
   evaluate() {
-    let bestScore = 0;
-    
-    if(this.best !== undefined) {
-      bestScore = this.best.fitness;
-    }
+    let worldrecord = 0.0;
+    let index = 0;
 
     for (let i = 0; i < this.population.length; i++) {
-      if (this.population[i].fitness > bestScore) {
-        this.best = this.population[i];
-        bestScore = this.population[i].fitness;
+      if (this.population[i].fitness > worldrecord) {
+        index = i;
+        worldrecord = this.population[i].fitness;
       }
     }
+
+    this.best = this.population[index].genes;
   }
 
   isFinished() {
