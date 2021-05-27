@@ -102,6 +102,7 @@ function draw() {
   // Generate mating pool
 }
 function start() {
+  GlobalScore = 0;
   population = new Population(
     mutationRate,
     popmax,
