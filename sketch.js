@@ -21,6 +21,8 @@ let isWait = false;
 
 let waitTime = 100;
 
+let animationCheckBox_value = false;
+let animationCheckBox;
 // Bin corner border value.
 let Border_line_X = 800;
 
@@ -50,6 +52,9 @@ function setup() {
   button = createButton("Start");
   button.position(100, 100);
   button.mousePressed(() => start());
+  animationCheckBox = createCheckbox("Animation",false);
+  animationCheckBox.position(1000, 500);
+  animationCheckBox.changed(checkBoxEvent);
 
   stats = createP("Stats");
   stats.position(1000, 50);
@@ -66,40 +71,10 @@ function draw() {
   //
   background("#E2F0FF");
 
-  if(rectangularDrawIndex >= Rectangulars.length) {
-    firstTimeDraw = false;
-    rectangularDrawIndex = 0;
-    isWait = true;
-  }
-
-  if(firstTimeDraw) {
-
-    for (i = 0; i < rectangularDrawIndex; i++) {
-      Rectangulars[i].show(Rectangulars[i].Y);
-    }
-
-    Rectangulars[rectangularDrawIndex].show(Y);
-
-    Y = Y+100;
-    
-  if(Y >= Rectangulars[rectangularDrawIndex].Y) {
-    rectangularDrawIndex++;
-    Y = 0;
-  }
-  } else {
-    // Draw the all Rectangulars
-    for (i = 0; i < Rectangulars.length; i++) {
-      Rectangulars[i].show(Rectangulars[i].Y);
-    }
-  }
-
-  if(!firstTimeDraw && isWait) {
-    console.log("asd")
-    if(waitTime <= 0) {
-      isWait = false;
-      waitTime = 100;
-    }
-    waitTime--;
+  if (animationCheckBox_value){
+    animation();
+  } else{
+    noAnimation();
   }
 
   // Draw corner border line
@@ -385,5 +360,68 @@ class All_line {
     this.Start_point_X = Start_point_X;
     this.End_point_X = End_point_X;
     this.Y = Y;
+  }
+}
+
+function animation(){
+  if(rectangularDrawIndex >= Rectangulars.length) {
+    firstTimeDraw = false;
+    rectangularDrawIndex = 0;
+    isWait = true;
+  }
+
+  if(firstTimeDraw) {
+
+    for (i = 0; i < rectangularDrawIndex; i++) {
+      Rectangulars[i].show(Rectangulars[i].Y);
+    }
+
+    Rectangulars[rectangularDrawIndex].show(Y);
+
+    Y = Y+100;
+    
+  if(Y >= Rectangulars[rectangularDrawIndex].Y) {
+    rectangularDrawIndex++;
+    Y = 0;
+  }
+  } else {
+    // Draw the all Rectangulars
+    for (i = 0; i < Rectangulars.length; i++) {
+      Rectangulars[i].show(Rectangulars[i].Y);
+    }
+  }
+
+  if(!firstTimeDraw && isWait) {
+    console.log("asd")
+    if(waitTime <= 0) {
+      isWait = false;
+      waitTime = 100;
+    }
+    waitTime--;
+  }
+}
+
+function noAnimation(){
+  if(firstTimeDraw){
+    if(waitTime <= 0) {
+      firstTimeDraw = false;
+      isWait = false;
+      waitTime = 100;
+    }
+    else{
+      isWait = true;
+    }
+    waitTime--;
+  }
+  for (i = 0; i < Rectangulars.length; i++) {
+    Rectangulars[i].show(Rectangulars[i].Y);
+  }
+}
+
+function checkBoxEvent(){
+  if (this.checked()) {
+    animationCheckBox_value = true
+  } else {
+    animationCheckBox_value = false
   }
 }
