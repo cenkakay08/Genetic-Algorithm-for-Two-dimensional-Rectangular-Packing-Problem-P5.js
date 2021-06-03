@@ -3,21 +3,29 @@ let Rectangulars = [];
 let DeepCopyRect;
 let copyPopulation;
 let globalStack = 0;
-let currentBest;
 //Genetic algorithm population
 let population;
 let GlobalScore = 0;
+let currentBest;
 let stats;
 let isStarted = false;
 let stopCondition;
 let popmax;
 let mutationRate;
 
+let Y = -200;
+let rectangularDrawIndex = 0;
+
+let firstTimeDraw = false;
+let isWait = false;
+
+let waitTime = 100;
+
 // Bin corner border value.
 let Border_line_X = 800;
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 100;
+let Number_for_random_rectangulars = 75;
 
 function setup() {
   // Canvas created according to Window dimensions.
@@ -29,14 +37,19 @@ function setup() {
       Math.floor(Math.random() * (100 - 10 + 1)) + 10,
       Math.floor(Math.random() * (windowWidth - 100 - 1 + 1)) + 1,
       Math.floor(Math.random() * (windowHeight - 100 - 1 + 1)) + 1,
-      i
+      i,
+      color(
+        Math.floor(Math.random() * 205) + 50,
+        Math.floor(Math.random() * 205) + 50,
+        Math.floor(Math.random() * 205) + 50
+      )
     );
   }
   DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
 
-  sliderPopulation = createSlider(0, 360, 60, 40);
+  /* sliderPopulation = createSlider(0, 360, 60, 40);
   sliderPopulation.position(400, 400);
-  sliderPopulation.style("width", "80px");
+  sliderPopulation.style("width", "80px"); */
 
   button = createButton("Start");
   button.position(100, 100);
@@ -46,10 +59,9 @@ function setup() {
   stats.position(1000, 50);
   stats.class("gen");
 
-  stopCondition = 10000;
-  popmax = 10000;
+  stopCondition = 1000;
+  popmax = 100;
   mutationRate = 0.01;
-  noLoop();
   // Create a population with a target phrase, mutation rate, and population max
 }
 
@@ -58,17 +70,76 @@ function draw() {
   //
   background("#E2F0FF");
 
-  // Draw the all Rectangulars
-  for (i = 0; i < Rectangulars.length; i++) {
-    Rectangulars[i].show();
+  if (rectangularDrawIndex >= Rectangulars.length) {
+    firstTimeDraw = false;
+    rectangularDrawIndex = 0;
+    isWait = true;
   }
+
+  if (firstTimeDraw) {
+    for (i = 0; i < rectangularDrawIndex; i++) {
+      Rectangulars[i].show(Rectangulars[i].Y);
+    }
+
+    Rectangulars[rectangularDrawIndex].show(Y);
+
+    Y = Y + 100;
+
+    if (Y >= Rectangulars[rectangularDrawIndex].Y) {
+      rectangularDrawIndex++;
+      Y = 0;
+    }
+  } else {
+    // Draw the all Rectangulars
+    for (i = 0; i < Rectangulars.length; i++) {
+      Rectangulars[i].show(Rectangulars[i].Y);
+    }
+  }
+
+  if (!firstTimeDraw && isWait) {
+    console.log("asd");
+    if (waitTime <= 0) {
+      isWait = false;
+      waitTime = 100;
+    }
+    waitTime--;
+  }
+
+  // Draw corner border line
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
-  // Draw corner border line
+
+  if (!firstTimeDraw && population !== undefined && !isWait) {
+    genetic();
+  }
   line(0, GlobalScore, Border_line_X, GlobalScore);
   strokeWeight(1);
   displayInfo();
 
+  if (globalStack == stopCondition + 1) {
+    noLoop();
+    globalStack = 0;
+    GlobalScore = 0;
+    //population = copyPopulation;
+  }
+
+  // Generate mating pool
+}
+function start() {
+  population = new Population(
+    mutationRate,
+    popmax,
+    DeepCopyRect,
+    stopCondition
+  );
+
+  rectangularDrawIndex = 0;
+  firstTimeDraw = false;
+  waitTime = 100;
+  //copyPopulation = Object.assign({}, population);
+  loop();
+}
+function genetic() {
   population.naturalSelection();
   //Create next generation
   population.generate();
@@ -85,41 +156,21 @@ function draw() {
       .map((a) => Object.assign(new Rectangular(), a));
 
     //animation
+    firstTimeDraw = true;
   }
-  /*  if (population.isFinished()) {
-    console.log("buraya ulaştım");
-    noLoop();
-  } */
   globalStack++;
-
-  if (globalStack == stopCondition + 1) {
-    noLoop();
-    globalStack = 0;
-    GlobalScore = 0;
-    //population = copyPopulation;
-  }
-
-  // Generate mating pool
-}
-function start() {
-  GlobalScore = 0;
-  population = new Population(
-    mutationRate,
-    popmax,
-    DeepCopyRect,
-    stopCondition
-  );
-  //copyPopulation = Object.assign({}, population);
-  loop();
 }
 function displayInfo() {
-  let statstext =
-    "total generations:     " + population.getGenerations() + "<br>";
-  statstext +=
-    "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
-  statstext += "total population:      " + popmax + "<br>";
-  statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
-
+  let statstext = "";
+  if (population !== undefined) {
+    statstext =
+      "total generations:     " + population.getGenerations() + "<br>";
+    statstext +=
+      "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
+    statstext += "best fitness:       " + GlobalScore + "<br>";
+    statstext += "total population:      " + popmax + "<br>";
+    statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
+  }
   stats.html(statstext);
 }
 
@@ -295,9 +346,8 @@ function EasyOrder(RectangularsCopy) {
       HeightsRectangularY = RectangularsCopy[i].height;
     }
   }
-
   var Score = 9999;
-  for (var i = 0; i < RectangularsCopy.length; i++) {
+  for (i = 0; i < RectangularsCopy.length; i++) {
     var tempScore = RectangularsCopy[i].Y;
     if (tempScore < Score) {
       Score = tempScore;
@@ -312,28 +362,24 @@ function EasyOrder(RectangularsCopy) {
 }
 
 class Rectangular {
-  constructor(width, height, X, Y, id) {
+  constructor(width, height, X, Y, id, c) {
     this.width = width;
     this.height = height;
     this.X = X;
     this.Y = Y;
     this.id = id;
-    this.color = color(
-      Math.floor(Math.random() * 205) + 50,
-      Math.floor(Math.random() * 205) + 50,
-      Math.floor(Math.random() * 205) + 50
-    );
+    this.color = c;
   }
-  show() {
+  show(y) {
     stroke(0);
     strokeWeight(1);
     fill(this.color);
-    rect(this.X, this.Y, this.width, this.height);
+    rect(this.X, y, this.width, this.height);
     textAlign(CENTER, CENTER);
-    fill(color("black"));
     stroke(0);
     strokeWeight(1);
-    text(this.id, this.X + this.width / 2, this.Y + this.height / 2);
+    fill(color("black"));
+    text(this.id, this.X + this.width / 2, y + this.height / 2);
   }
 }
 class All_line {
@@ -343,3 +389,5 @@ class All_line {
     this.Y = Y;
   }
 }
+
+module.exports = { Rectangular, All_line };

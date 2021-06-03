@@ -8,7 +8,7 @@ class Population {
     this.perfectScore = 1;
     this.stopCondition = stopCondition;
 
-    this.best = "";
+    this.best;
 
     this.population = [];
     for (let i = 0; i < num; i++) {
