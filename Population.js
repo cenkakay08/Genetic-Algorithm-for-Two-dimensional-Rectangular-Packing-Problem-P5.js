@@ -1,119 +1,110 @@
 class Population {
-    constructor(m, num, initialArray, stopCondition) {
-  
-      this.population; // Array to hold the current population
-      this.matingPool; // ArrayList for mating pool
-      this.generations = 0; // Number of generations
-      this.finished = false; // Are we finished evolving?
-      this.mutationRate = m; // Mutation rate
-      this.perfectScore = 1;
-      this.stopCondition = stopCondition;
-  
-      this.best = "";
-  
-      this.population = [];
-      for (let i = 0; i < num; i++) {
-        this.population[i] = new DNA(initialArray);
-      }
-      this.matingPool = [];
-      this.calcFitness();
-    }
-  
-    // Fitness Scores
-    calcFitness() {
-      for (let i = 0; i < this.population.length; i++) {
-        this.population[i].calcFitness();
-      }
-    }
-  
-    // Generate a mating pool
-    naturalSelection() {
-      this.matingPool = [];
-  
-      let maxFitness = 0;
-      for (let i = 0; i < this.population.length; i++) {
-          
-        if (this.population[i].fitness > maxFitness) {
-          maxFitness = this.population[i].fitness;
-        }
-      }
+  constructor(m, num, initialArray, stopCondition) {
+    this.population; // Array to hold the current population
+    this.matingPool; // ArrayList for mating pool
+    this.generations = 0; // Number of generations
+    this.finished = false; // Are we finished evolving?
+    this.mutationRate = m; // Mutation rate
+    this.perfectScore = 1;
+    this.stopCondition = stopCondition;
 
-  
-      for (let i = 0; i < this.population.length; i++) {
-        let fitness = map(this.population[i].fitness, 0, maxFitness, 0, 1);
-        let n = floor(fitness * 100); 
+    this.best;
 
-        for (let j = 0; j < n; j++) { 
-          this.matingPool.push(this.population[i]);
-        }
-      }
+    this.population = [];
+    for (let i = 0; i < num; i++) {
+      this.population[i] = new DNA(initialArray);
     }
-  
-    generate() {
+    this.matingPool = [];
+    this.calcFitness();
+  }
 
-      for (let i = 0; i < this.population.length; i++) {
-        let a = floor(random(this.matingPool.length));
-        let b = floor(random(this.matingPool.length));
-        let partnerA = this.matingPool[a];
-        let partnerB = this.matingPool[b];
-        let child = partnerA.crossover(partnerB);
-
-        child.mutate(this.mutationRate);
-        this.population[i] = child;
-      }
-      this.generations++;
-
-      if(this.generations >= this.stopCondition) {
-        this.isFinished = true;
-      }
-    }
-  
-  
-    getBest() {
-      return this.best;
-    }
-  
-    evaluate() {
-      let worldrecord = 0.0;
-      let index = 0;
-
-      for (let i = 0; i < this.population.length; i++) {
-        if (this.population[i].fitness > worldrecord) {
-          index = i;
-          worldrecord = this.population[i].fitness;
-        }
-      }
-  
-      this.best = this.population[index].genes.map(String);
-    }
-  
-    isFinished() {
-      return this.finished;
-    }
-  
-    getGenerations() {
-      return this.generations;
-    }
-  
-    // Compute average fitness for the population
-    getAverageFitness() {
-      let total = 0;
-
-      for (let i = 0; i < this.population.length; i++) {
-        total += this.population[i].fitness;
-      }
-      return total / (this.population.length);
-    }
-  
-    allPhrases() {
-      let everything = "";
-  
-      let displayLimit = min(this.population.length, 50);
-  
-  
-      for (let i = 0; i < displayLimit; i++) {
-        everything += this.population[i].genes.map(String) + "<br>";
-      }
-      return everything;
+  // Fitness Scores
+  calcFitness() {
+    for (let i = 0; i < this.population.length; i++) {
+      this.population[i].calcFitness();
     }
   }
+
+  // Generate a mating pool
+  naturalSelection() {
+    this.matingPool = [];
+
+    let maxFitness = this.population[0].fitness;
+    for (let i = 0; i < this.population.length; i++) {
+      if (this.population[i].fitness > maxFitness) {
+        maxFitness = this.population[i].fitness;
+      }
+    }
+
+    for (let i = 0; i < this.population.length; i++) {
+      let fitness = map(this.population[i].fitness, 0, maxFitness, 0, 1);
+      let n = floor(fitness * 100);
+
+      for (let j = 0; j < n; j++) {
+        this.matingPool.push(this.population[i]);
+      }
+    }
+  }
+
+  generate() {
+    for (let i = 0; i < this.population.length; i++) {
+      let a = floor(random(this.matingPool.length));
+      let b = floor(random(this.matingPool.length));
+      let partnerA = this.matingPool[a];
+      let partnerB = this.matingPool[b];
+      let child = partnerA.crossover(partnerB);
+
+      child.mutate(this.mutationRate);
+      this.population[i] = child;
+    }
+    this.generations++;
+
+    if (this.generations >= this.stopCondition) {
+      this.finished = true;
+    }
+  }
+
+  getBest() {
+    return this.best;
+  }
+
+  evaluate() {
+    let worldrecord = 0.0;
+    let index = 0;
+
+    for (let i = 0; i < this.population.length; i++) {
+      if (this.population[i].fitness > worldrecord) {
+        index = i;
+        worldrecord = this.population[i].fitness;
+      }
+    }
+
+    this.best = this.population[index].genes;
+  }
+
+  isFinished() {
+    return this.finished;
+  }
+
+  getGenerations() {
+    return this.generations;
+  }
+
+  // Compute average fitness for the population
+  getAverageFitness() {
+    let total = 0;
+
+    for (let i = 0; i < this.population.length; i++) {
+      total += this.population[i].fitness;
+    }
+    return total / this.population.length;
+  }
+
+  getPopulationQuantity() {
+    return this.population.length;
+  }
+
+  getMutationRate() {
+    return this.mutationRate;
+  }
+}

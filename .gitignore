@@ -1,4 +1,3 @@
 /.vscode
-
 /jsconfig.json
-/libraries
+/node_modules
