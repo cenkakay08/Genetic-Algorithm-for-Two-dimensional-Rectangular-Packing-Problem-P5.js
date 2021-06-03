@@ -6,6 +6,7 @@ let globalStack = 0;
 //Genetic algorithm population
 let population;
 let GlobalScore = 0;
+
 let currentBest;
 let stats;
 let isStarted = false;
@@ -23,57 +24,154 @@ let waitTime = 100;
 
 let animationCheckBox_value = false;
 let animationCheckBox;
+
+let randomRectangularCheckBox;
+let randomRectangular_value = true
 // Bin corner border value.
 let Border_line_X = 800;
+let startButton
 
 // Set number for quantity of random Rectangulars.
-let Number_for_random_rectangulars = 50;
+let Number_for_random_rectangulars = 100;
 
 function setup() {
+  Border_line_X = (windowWidth / 100) * 80;
   // Canvas created according to Window dimensions.
   createCanvas(windowWidth, windowHeight);
   // Create Rectangulars that has random height and width size.
-  for (i = 0; i < Number_for_random_rectangulars; i++) {
-    Rectangulars[i] = new Rectangular(
-      Math.floor(Math.random() * (100 - 10 + 1)) + 10,
-      Math.floor(Math.random() * (100 - 10 + 1)) + 10,
-      Math.floor(Math.random() * (windowWidth - 100 - 1 + 1)) + 1,
-      Math.floor(Math.random() * (windowHeight - 100 - 1 + 1)) + 1,
-      i,
-      color(Math.floor(Math.random() * 205) + 50,Math.floor(Math.random() * 205) + 50,Math.floor(Math.random() * 205) + 50)
-    );
-  }
-  DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
 
-  sliderPopulation = createSlider(0, 360, 60, 40);
-  sliderPopulation.position(400, 400);
-  sliderPopulation.style("width", "80px");
+  sliderRectWidth = createSlider(10, 200, 100);
+  sliderRectWidth.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 40
+  );
+  sliderRectWidth.style("width", (windowWidth / 100) * 10 + "px");
 
-  button = createButton("Start");
-  button.position(100, 100);
-  button.mousePressed(() => start());
-  animationCheckBox = createCheckbox("Animation",false);
-  animationCheckBox.position(1000, 500);
+  sliderRectHeight = createSlider(10, 200, 100);
+  sliderRectHeight.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 45
+  );
+  sliderRectHeight.style("width", (windowWidth / 100) * 10 + "px");
+
+  buttonAdd = createButton("Add");
+  buttonAdd.position((windowWidth / 100) * 95, (windowHeight / 100) * 50);
+  buttonAdd.mousePressed(() => createRectangular());
+
+  randomRectangularCheckBox = createCheckbox("Random", true);
+  randomRectangularCheckBox.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 50
+  );
+  randomRectangularCheckBox.changed(randomCheckBoxEvent);
+
+  sliderPopulation = createSlider(10, 1000, 100);
+  sliderPopulation.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 80
+  );
+  sliderPopulation.style("width", (windowWidth / 100) * 10 + "px");
+
+  slidermutationRate = createSlider(1, 100, 1);
+  slidermutationRate.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 78
+  );
+  slidermutationRate.style("width", (windowWidth / 100) * 10 + "px");
+
+  sliderStopCondition = createSlider(100, 10000, 1000);
+  sliderStopCondition.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 76
+  );
+  sliderStopCondition.style("width", (windowWidth / 100) * 10 + "px");
+
+  sliderRectNumber = createSlider(100, 200, 100);
+  sliderRectNumber.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 73.5
+  );
+  sliderRectNumber.style("width", (windowWidth / 100) * 10 + "px");
+
+  startButton = createButton("Start");
+  startButton.position((windowWidth / 100) * 95, (windowHeight / 100) * 95);
+  startButton.mousePressed(() => start());
+
+  animationCheckBox = createCheckbox("Activate the Animations", false);
+  animationCheckBox.position(
+    (windowWidth / 100) * 88,
+    (windowHeight / 100) * 88
+  );
   animationCheckBox.changed(checkBoxEvent);
 
-  stats = createP("Stats");
-  stats.position(1000, 50);
-  stats.class("gen");
-
-  stopCondition = 1000;
-  popmax = 100;
-  mutationRate = 0.01;
-  // Create a population with a target phrase, mutation rate, and population max
+  /* stats = createP("Stats");
+  stats.position((windowWidth / 100) * 89.5, 50);
+  stats.class("gen"); */
 }
 
 function draw() {
+  handleStart();
   // Background color
   //
   background("#E2F0FF");
+  strokeWeight(0);
+  if (population != undefined) {
+    text(
+      "Current Generation:" + population.getGenerations(),
+      (windowWidth / 100) * 81,
+      (windowHeight / 100) * 10
+    );
+    text(
+      "Average Fitness:" + nf(population.getAverageFitness()),
+      (windowWidth / 100) * 81,
+      (windowHeight / 100) * 12
+    );
+    text(
+      "Best Fitness:" + GlobalScore,
+      (windowWidth / 100) * 81,
+      (windowHeight / 100) * 14
+    );
+    text(
+      "Population Quantity of Generations:" +
+        population.getPopulationQuantity(),
+      (windowWidth / 100) * 81,
+      (windowHeight / 100) * 16
+    );
+  }
+  text(
+    "Rectangel Quantity:" + sliderRectNumber.value().toString(),
+    (windowWidth / 100) * 81,
+    (windowHeight / 100) * 75
+  );
+  text(
+    "Population Quantity: " + sliderPopulation.value().toString(),
+    (windowWidth / 100) * 81,
+    (windowHeight / 100) * 82
+  );
+  text(
+    ("Mutation Rate: " + slidermutationRate.value() / 100).toString(),
+    (windowWidth / 100) * 81,
+    (windowHeight / 100) * 80
+  );
+  text(
+    "Stop Condition: " + sliderStopCondition.value().toString(),
+    (windowWidth / 100) * 81,
+    (windowHeight / 100) * 77.8
+  );
+  text(
+    ("Width: " + sliderRectWidth.value() ).toString(),
+    (windowWidth / 100) * 81,
+    (windowHeight / 100) * 42
+  );
+  text(
+    "Height: " + sliderRectHeight.value().toString(),
+    (windowWidth / 100) * 81,
+    (windowHeight / 100) * 47
+  );
 
-  if (animationCheckBox_value){
+  if (animationCheckBox_value) {
     animation();
-  } else{
+  } else {
     noAnimation();
   }
 
@@ -81,28 +179,33 @@ function draw() {
   strokeWeight(1);
   line(Border_line_X, 0, Border_line_X, windowHeight);
 
-  if( !firstTimeDraw && population !== undefined && !isWait) {
-      genetic();
+  if (!firstTimeDraw && population !== undefined && !isWait) {
+    genetic();
   }
   line(0, GlobalScore, Border_line_X, GlobalScore);
   strokeWeight(1);
-  displayInfo();
+  //displayInfo();
 
-  if (globalStack == stopCondition + 1) {
-    noLoop();
+  /*  if (globalStack == stopCondition + 1) {
+    //noLoop();
     globalStack = 0;
     GlobalScore = 0;
     //population = copyPopulation;
-  }
+  } */
 
   // Generate mating pool
 }
 function start() {
+  GlobalScore = 0;
+  if (randomRectangular_value) {
+    randomRectangulars();
+  }
+  DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
   population = new Population(
-    mutationRate,
-    popmax,
+    slidermutationRate.value() / 100,
+    sliderPopulation.value(),
     DeepCopyRect,
-    stopCondition
+    sliderStopCondition.value()
   );
 
   rectangularDrawIndex = 0;
@@ -112,37 +215,39 @@ function start() {
   loop();
 }
 function genetic() {
-  population.naturalSelection();
-  //Create next generation
+  if (population.isFinished() == false) {
+    population.naturalSelection();
+    //Create next generation
     population.generate();
-  // Calculate fitness
+    // Calculate fitness
     population.calcFitness();
 
     population.evaluate();
     currentBest = EasyOrder(population.getBest());
-  if (currentBest > GlobalScore) {
-    GlobalScore = currentBest;
+    if (currentBest > GlobalScore) {
+      GlobalScore = currentBest;
 
-    Rectangulars = population
-      .getBest()
-      .map((a) => Object.assign(new Rectangular(), a));
+      Rectangulars = population
+        .getBest()
+        .map((a) => Object.assign(new Rectangular(), a));
 
-    //animation
-    firstTimeDraw = true;
-  }
+      //animation
+      firstTimeDraw = true;
+    }
     globalStack++;
+  }
 }
 function displayInfo() {
   let statstext = "";
-  if(population !== undefined) {
-  statstext =
-    "total generations:     " + population.getGenerations() + "<br>";
-  statstext +=
-    "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
-  statstext +=
-    "best fitness:       " + GlobalScore + "<br>";
-  statstext += "total population:      " + popmax + "<br>";
-  statstext += "mutation rate:         " + floor(mutationRate * 100) + "%";
+  if (population !== undefined) {
+    statstext =
+      "current generations:     " + population.getGenerations() + "<br>";
+    statstext +=
+      "average fitness:       " + nf(population.getAverageFitness()) + "<br>";
+    statstext += "best fitness:       " + GlobalScore + "<br>";
+    statstext +=
+      "total population:      " + population.getPopulationQuantity() + "<br>";
+    statstext += "mutation rate:         " + population.getMutationRate() + "%";
   }
   stats.html(statstext);
 }
@@ -335,24 +440,28 @@ function EasyOrder(RectangularsCopy) {
 }
 
 class Rectangular {
-  constructor(width, height, X, Y, id, c) {
+  constructor(width, height, X, Y, id) {
     this.width = width;
     this.height = height;
     this.X = X;
     this.Y = Y;
     this.id = id;
-    this.color = c;
+    this.color = color(
+      Math.floor(Math.random() * 205) + 50,
+      Math.floor(Math.random() * 205) + 50,
+      Math.floor(Math.random() * 205) + 50
+    );
   }
   show(y) {
-      stroke(0);
-      strokeWeight(1);
-      fill(this.color);
-      rect(this.X, y, this.width, this.height);
-      textAlign(CENTER, CENTER);
-      stroke(0);
-      strokeWeight(1);
-      fill(color('black'));
-      text(this.id, this.X + this.width / 2, y + this.height / 2);
+    stroke(0);
+    strokeWeight(1);
+    fill(this.color);
+    rect(this.X, y, this.width, this.height);
+    textAlign(CENTER, CENTER);
+    stroke(0);
+    strokeWeight(1);
+    fill(color("black"));
+    text(this.id, this.X + this.width / 2, y + this.height / 2);
   }
 }
 class All_line {
@@ -363,27 +472,26 @@ class All_line {
   }
 }
 
-function animation(){
-  if(rectangularDrawIndex >= Rectangulars.length) {
+function animation() {
+  if (rectangularDrawIndex >= Rectangulars.length) {
     firstTimeDraw = false;
     rectangularDrawIndex = 0;
     isWait = true;
   }
 
-  if(firstTimeDraw) {
-
+  if (firstTimeDraw) {
     for (i = 0; i < rectangularDrawIndex; i++) {
       Rectangulars[i].show(Rectangulars[i].Y);
     }
 
     Rectangulars[rectangularDrawIndex].show(Y);
 
-    Y = Y+100;
-    
-  if(Y >= Rectangulars[rectangularDrawIndex].Y) {
-    rectangularDrawIndex++;
-    Y = 0;
-  }
+    Y = Y + 100;
+
+    if (Y >= Rectangulars[rectangularDrawIndex].Y) {
+      rectangularDrawIndex++;
+      Y = 0;
+    }
   } else {
     // Draw the all Rectangulars
     for (i = 0; i < Rectangulars.length; i++) {
@@ -391,9 +499,8 @@ function animation(){
     }
   }
 
-  if(!firstTimeDraw && isWait) {
-    console.log("asd")
-    if(waitTime <= 0) {
+  if (!firstTimeDraw && isWait) {
+    if (waitTime <= 0) {
       isWait = false;
       waitTime = 100;
     }
@@ -401,14 +508,13 @@ function animation(){
   }
 }
 
-function noAnimation(){
-  if(firstTimeDraw){
-    if(waitTime <= 0) {
+function noAnimation() {
+  if (firstTimeDraw) {
+    if (waitTime <= 0) {
       firstTimeDraw = false;
       isWait = false;
       waitTime = 100;
-    }
-    else{
+    } else {
       isWait = true;
     }
     waitTime--;
@@ -416,12 +522,66 @@ function noAnimation(){
   for (i = 0; i < Rectangulars.length; i++) {
     Rectangulars[i].show(Rectangulars[i].Y);
   }
+  if (!firstTimeDraw && isWait) {
+    if (waitTime <= 0) {
+      isWait = false;
+      waitTime = 100;
+    }
+    waitTime--;
+  }
 }
 
-function checkBoxEvent(){
+function checkBoxEvent() {
   if (this.checked()) {
-    animationCheckBox_value = true
+    animationCheckBox_value = true;
   } else {
-    animationCheckBox_value = false
+    animationCheckBox_value = false;
+  }
+}
+function randomCheckBoxEvent() {
+  if (this.checked()) {
+    randomRectangular_value = true;
+  } else {
+    randomRectangular_value = false;
+  }
+}
+
+function randomCheckBoxEvent() {
+  if (this.checked()) {
+    
+    randomRectangular_value = true
+  } else{
+    
+    randomRectangular_value = false
+  }
+}
+
+function handleStart(){
+  if(randomRectangular_value || Rectangulars.length > 10) {
+    startButton.removeAttribute('disabled');
+  } else{
+    startButton.attribute('disabled', '');
+  }
+}
+
+function createRectangular() {
+  Rectangulars[i] = new Rectangular(
+    Math.floor(sliderRectWidth.value()/100 * ((windowWidth / 100) * 3)) + 10,
+    Math.floor(sliderRectHeight.value()/100 * ((windowHeight / 100) * 3)) + 10,
+    0,
+    0,
+    i
+  );
+}
+
+function randomRectangulars(){
+  for (i = 0; i < sliderRectNumber.value(); i++) {
+    Rectangulars[i] = new Rectangular(
+      Math.floor(Math.random() * ((windowWidth / 100) * 3)) + 10,
+      Math.floor(Math.random() * ((windowHeight / 100) * 3)) + 10,
+      0,
+      0,
+      i
+    );
   }
 }
