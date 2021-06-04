@@ -83,33 +83,39 @@ function setup() {
 function draw() {
   // Background color
   //
+
   background("#E2F0FF");
   strokeWeight(0);
   if (population != undefined) {
     text(
       "Current Generation:" + population.getGenerations(),
       (windowWidth / 100) * 81,
-      (windowHeight / 100) * 50
+      (windowHeight / 100) * 40
     );
     text(
-      "Average Fitness:" + nf(population.getAverageFitness()),
+      "Average Fitness:" + population.getAverageFitness(),
       (windowWidth / 100) * 81,
-      (windowHeight / 100) * 52
+      (windowHeight / 100) * 42
     );
     text(
       "Best Fitness:" + GlobalScore,
       (windowWidth / 100) * 81,
-      (windowHeight / 100) * 54
+      (windowHeight / 100) * 44
     );
     text(
       "Population Quantity of Generations:" +
         population.getPopulationQuantity(),
       (windowWidth / 100) * 81,
-      (windowHeight / 100) * 56
+      (windowHeight / 100) * 46
+    );
+    text(
+      "Box Height:" + (windowHeight - GlobalScore).toString(),
+      (windowWidth / 100) * 81,
+      (windowHeight / 100) * 38
     );
   }
   text(
-    "Rectangel Quantity:" + sliderRectNumber.value().toString(),
+    "Rectangel Quantity: " + sliderRectNumber.value().toString(),
     (windowWidth / 100) * 81,
     (windowHeight / 100) * 75
   );
@@ -159,8 +165,8 @@ function start() {
   GlobalScore = 0;
   for (i = 0; i < sliderRectNumber.value(); i++) {
     Rectangulars[i] = new Rectangular(
-      Math.floor(Math.random() * ((windowWidth / 100) * 3)) + 10,
-      Math.floor(Math.random() * ((windowHeight / 100) * 3)) + 10,
+      Math.floor(Math.random() * ((windowWidth / 100) * 7)) + 10,
+      Math.floor(Math.random() * ((windowHeight / 100) * 7)) + 10,
       0,
       0,
       i
@@ -203,7 +209,7 @@ function genetic() {
     globalStack++;
   }
 }
-function displayInfo() {
+/* function displayInfo() {
   let statstext = "";
   if (population !== undefined) {
     statstext =
@@ -216,7 +222,7 @@ function displayInfo() {
     statstext += "mutation rate:         " + population.getMutationRate() + "%";
   }
   stats.html(statstext);
-}
+} */
 
 // Function for resize Canvas according to Window dimensions.
 function windowResized() {
