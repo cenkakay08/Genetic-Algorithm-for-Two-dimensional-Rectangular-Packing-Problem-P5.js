@@ -23,10 +23,8 @@ let isWait = false;
 let waitTime = 100;
 
 let animationCheckBox_value = false;
-let animationCheckBox;
 
-let randomRectangularCheckBox;
-let randomRectangular_value = true
+let randomCheckBox_value = true
 // Bin corner border value.
 let Border_line_X = 800;
 let startButton
@@ -57,6 +55,10 @@ function setup() {
   buttonAdd = createButton("Add");
   buttonAdd.position((windowWidth / 100) * 95, (windowHeight / 100) * 50);
   buttonAdd.mousePressed(() => createRectangular());
+
+  buttonReset = createButton("Reset");
+  buttonReset.position((windowWidth / 100) * 95, (windowHeight / 100) * 55);
+  buttonReset.mousePressed(() => resetRectangulars());
 
   randomRectangularCheckBox = createCheckbox("Random", true);
   randomRectangularCheckBox.position(
@@ -110,7 +112,6 @@ function setup() {
 }
 
 function draw() {
-  handleStart();
   // Background color
   //
   background("#E2F0FF");
@@ -197,7 +198,7 @@ function draw() {
 }
 function start() {
   GlobalScore = 0;
-  if (randomRectangular_value) {
+  if (randomCheckBox_value) {
     randomRectangulars();
   }
   DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
@@ -540,24 +541,16 @@ function checkBoxEvent() {
 }
 function randomCheckBoxEvent() {
   if (this.checked()) {
-    randomRectangular_value = true;
+    randomCheckBox_value = true;
   } else {
-    randomRectangular_value = false;
+    randomCheckBox_value = false;
   }
+  handleStartButton();
 }
 
-function randomCheckBoxEvent() {
-  if (this.checked()) {
-    
-    randomRectangular_value = true
-  } else{
-    
-    randomRectangular_value = false
-  }
-}
-
-function handleStart(){
-  if(randomRectangular_value || Rectangulars.length > 10) {
+function handleStartButton(){
+  
+  if(randomCheckBox_value || Rectangulars.length > 10) {
     startButton.removeAttribute('disabled');
   } else{
     startButton.attribute('disabled', '');
@@ -565,13 +558,14 @@ function handleStart(){
 }
 
 function createRectangular() {
-  Rectangulars[i] = new Rectangular(
+  Rectangulars.push(new Rectangular(
     Math.floor(sliderRectWidth.value()/100 * ((windowWidth / 100) * 3)) + 10,
     Math.floor(sliderRectHeight.value()/100 * ((windowHeight / 100) * 3)) + 10,
     0,
     0,
-    i
-  );
+    Rectangulars.length
+  ));
+  handleStartButton();
 }
 
 function randomRectangulars(){
@@ -584,4 +578,9 @@ function randomRectangulars(){
       i
     );
   }
+}
+
+function resetRectangulars() {
+  Rectangulars = [];
+  handleStartButton();
 }
