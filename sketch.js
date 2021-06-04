@@ -148,10 +148,10 @@ function setup() {
   buttonReset.position((windowWidth / 100) * 95, (windowHeight / 100) * 55);
   buttonReset.mousePressed(() => resetRectangulars());
 
-  randomRectangularCheckBox = createCheckbox("Random", true);
+  randomRectangularCheckBox = createCheckbox("Use Random Rectangles", true);
   randomRectangularCheckBox.position(
     (windowWidth / 100) * 80,
-    (windowHeight / 100) * 50
+    (windowHeight / 100) * 90
   );
   randomRectangularCheckBox.changed(randomCheckBoxEvent);
 
@@ -176,7 +176,7 @@ function setup() {
   );
   sliderStopCondition.style("width", (windowWidth / 100) * 10 + "px");
 
-  sliderRectNumber = createSlider(100, 200, 100);
+  sliderRectNumber = createSlider(100, 200, 150);
   sliderRectNumber.position(
     (windowWidth / 100) * 89.5,
     (windowHeight / 100) * 73.5
@@ -189,8 +189,8 @@ function setup() {
 
   animationCheckBox = createCheckbox("Activate the Animations", false);
   animationCheckBox.position(
-    (windowWidth / 100) * 88,
-    (windowHeight / 100) * 88
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 87
   );
   animationCheckBox.changed(checkBoxEvent);
 
