@@ -1,4 +1,3 @@
-// EmptY arraY for Rectangulars.
 let Rectangulars = [];
 let DeepCopyRect;
 let copyPopulation;
@@ -6,7 +5,17 @@ let globalStack = 0;
 //Genetic algorithm population
 let population;
 let GlobalScore = 0;
-
+let divRectanguleQuantity;
+let divStopCondition;
+let divMutationRate;
+let divPopulationQuantity;
+let divRectWidth;
+let divRectHeight;
+let divCurrentGeneration;
+let divAverageFitness;
+let divBestFitness;
+let divPopulationQuantityGenerations;
+let divBoxHeight;
 let currentBest;
 let stats;
 let isStarted = false;
@@ -23,9 +32,11 @@ let isWait = false;
 let waitTime = 100;
 
 let animationCheckBox_value = false;
-let animationCheckBox;
+
+let randomCheckBox_value = true;
 // Bin corner border value.
 let Border_line_X = 800;
+let startButton;
 
 // Set number for quantity of random Rectangulars.
 let Number_for_random_rectangulars = 100;
@@ -35,18 +46,126 @@ function setup() {
   // Canvas created according to Window dimensions.
   createCanvas(windowWidth, windowHeight);
   // Create Rectangulars that has random height and width size.
+  divRectanguleQuantity = createDiv("this is some text");
+  divRectanguleQuantity.style(
+    "font-size",
+    ((windowWidth / 100) * 1).toString() + "px"
+  );
+  divRectanguleQuantity.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 73
+  );
+  divStopCondition = createDiv("this is some text");
+  divStopCondition.style(
+    "font-size",
+    ((windowWidth / 100) * 1).toString() + "px"
+  );
+  divStopCondition.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 76
+  );
+  divMutationRate = createDiv("this is some text");
+  divMutationRate.style(
+    "font-size",
+    ((windowWidth / 100) * 1).toString() + "px"
+  );
+  divMutationRate.position((windowWidth / 100) * 80, (windowHeight / 100) * 79);
+  divPopulationQuantity = createDiv("sdasdasd");
+  divPopulationQuantity.style(
+    "font-size",
+    ((windowWidth / 100) * 0.95).toString() + "px"
+  );
+  divPopulationQuantity.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 82
+  );
+  divRectWidth = createDiv("sadasdasd");
+  divRectWidth.style("font-size", ((windowWidth / 100) * 1).toString() + "px");
+  divRectWidth.position((windowWidth / 100) * 82, (windowHeight / 100) * 40);
+  divRectHeight = createDiv("sadasdasd");
+  divRectHeight.style("font-size", ((windowWidth / 100) * 1).toString() + "px");
+  divRectHeight.position((windowWidth / 100) * 82, (windowHeight / 100) * 45);
+  divCurrentGeneration = createDiv("Current Generation:");
+  divCurrentGeneration.style(
+    "font-size",
+    ((windowWidth / 100) * 1).toString() + "px"
+  );
+  divCurrentGeneration.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 10
+  );
+  divAverageFitness = createDiv("Average Fitness:");
+  divAverageFitness.style(
+    "font-size",
+    ((windowWidth / 100) * 1).toString() + "px"
+  );
+  divAverageFitness.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 13
+  );
+  divBestFitness = createDiv("Best Fitness:");
+  divBestFitness.style(
+    "font-size",
+    ((windowWidth / 100) * 1).toString() + "px"
+  );
+  divBestFitness.position((windowWidth / 100) * 80, (windowHeight / 100) * 16);
+  divPopulationQuantityGenerations = createDiv(
+    "Population Quantity of Generations:"
+  );
+  divPopulationQuantityGenerations.style(
+    "font-size",
+    ((windowWidth / 100) * 1).toString() + "px"
+  );
+  divPopulationQuantityGenerations.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 19
+  );
+  divBoxHeight = createDiv("Height of the Bin:");
+  divBoxHeight.style(
+    "font-size",
+    ((windowWidth / 100) * 1.2).toString() + "px"
+  );
+  divBoxHeight.position((windowWidth / 100) * 80, (windowHeight / 100) * 22);
+  sliderRectWidth = createSlider(10, 200, 100);
+  sliderRectWidth.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 40
+  );
+  sliderRectWidth.style("width", (windowWidth / 100) * 10 + "px");
+
+  sliderRectHeight = createSlider(10, 200, 100);
+  sliderRectHeight.position(
+    (windowWidth / 100) * 89.5,
+    (windowHeight / 100) * 45
+  );
+  sliderRectHeight.style("width", (windowWidth / 100) * 10 + "px");
+
+  buttonAdd = createButton("Add");
+  buttonAdd.position((windowWidth / 100) * 95, (windowHeight / 100) * 50);
+  buttonAdd.mousePressed(() => createRectangular());
+
+  buttonReset = createButton("Reset");
+  buttonReset.position((windowWidth / 100) * 95, (windowHeight / 100) * 55);
+  buttonReset.mousePressed(() => resetRectangulars());
+
+  randomRectangularCheckBox = createCheckbox("Random", true);
+  randomRectangularCheckBox.position(
+    (windowWidth / 100) * 80,
+    (windowHeight / 100) * 50
+  );
+  randomRectangularCheckBox.changed(randomCheckBoxEvent);
 
   sliderPopulation = createSlider(10, 1000, 100);
   sliderPopulation.position(
     (windowWidth / 100) * 89.5,
-    (windowHeight / 100) * 80
+    (windowHeight / 100) * 82
   );
   sliderPopulation.style("width", (windowWidth / 100) * 10 + "px");
 
   slidermutationRate = createSlider(1, 100, 1);
   slidermutationRate.position(
     (windowWidth / 100) * 89.5,
-    (windowHeight / 100) * 78
+    (windowHeight / 100) * 79
   );
   slidermutationRate.style("width", (windowWidth / 100) * 10 + "px");
 
@@ -64,9 +183,9 @@ function setup() {
   );
   sliderRectNumber.style("width", (windowWidth / 100) * 10 + "px");
 
-  button = createButton("Start");
-  button.position((windowWidth / 100) * 95, (windowHeight / 100) * 95);
-  button.mousePressed(() => start());
+  startButton = createButton("Start");
+  startButton.position((windowWidth / 100) * 95, (windowHeight / 100) * 95);
+  startButton.mousePressed(() => start());
 
   animationCheckBox = createCheckbox("Activate the Animations", false);
   animationCheckBox.position(
@@ -83,57 +202,37 @@ function setup() {
 function draw() {
   // Background color
   //
-
   background("#E2F0FF");
-  strokeWeight(0);
+  strokeWeight(1);
   if (population != undefined) {
-    text(
-      "Current Generation:" + population.getGenerations(),
-      (windowWidth / 100) * 81,
-      (windowHeight / 100) * 40
+    divCurrentGeneration.html(
+      "Current Generation:" + population.getGenerations()
     );
-    text(
-      "Average Fitness:" + population.getAverageFitness(),
-      (windowWidth / 100) * 81,
-      (windowHeight / 100) * 42
+    divAverageFitness.html(
+      "Average Fitness:" + nf(population.getAverageFitness())
     );
-    text(
-      "Best Fitness:" + GlobalScore,
-      (windowWidth / 100) * 81,
-      (windowHeight / 100) * 44
+    divBestFitness.html("Best Fitness:" + GlobalScore);
+    divPopulationQuantityGenerations.html(
+      "Population Quantity of Generations:" + population.getPopulationQuantity()
     );
-    text(
-      "Population Quantity of Generations:" +
-        population.getPopulationQuantity(),
-      (windowWidth / 100) * 81,
-      (windowHeight / 100) * 46
-    );
-    text(
-      "Box Height:" + (windowHeight - GlobalScore).toString(),
-      (windowWidth / 100) * 81,
-      (windowHeight / 100) * 38
+    divBoxHeight.html(
+      "Height of the Bin:" + (windowHeight - GlobalScore).toString()
     );
   }
-  text(
-    "Rectangel Quantity: " + sliderRectNumber.value().toString(),
-    (windowWidth / 100) * 81,
-    (windowHeight / 100) * 75
+  divRectanguleQuantity.html(
+    "Rectangel Quantity:" + sliderRectNumber.value().toString()
   );
-  text(
-    "Population Quantity: " + sliderPopulation.value().toString(),
-    (windowWidth / 100) * 81,
-    (windowHeight / 100) * 82
+  divStopCondition.html(
+    "Stop Condition: " + sliderStopCondition.value().toString()
   );
-  text(
-    ("Mutation Rate: " + slidermutationRate.value() / 100).toString(),
-    (windowWidth / 100) * 81,
-    (windowHeight / 100) * 80
+  divMutationRate.html(
+    "Mutation Rate: " + (slidermutationRate.value() / 100).toString()
   );
-  text(
-    "Stop Condition: " + sliderStopCondition.value().toString(),
-    (windowWidth / 100) * 81,
-    (windowHeight / 100) * 77.8
+  divPopulationQuantity.html(
+    "Population Quantity:" + sliderPopulation.value().toString()
   );
+  divRectWidth.html(("Width: " + sliderRectWidth.value()).toString());
+  divRectHeight.html(("Height: " + sliderRectHeight.value()).toString());
 
   if (animationCheckBox_value) {
     animation();
@@ -163,14 +262,8 @@ function draw() {
 }
 function start() {
   GlobalScore = 0;
-  for (i = 0; i < sliderRectNumber.value(); i++) {
-    Rectangulars[i] = new Rectangular(
-      Math.floor(Math.random() * ((windowWidth / 100) * 7)) + 10,
-      Math.floor(Math.random() * ((windowHeight / 100) * 7)) + 10,
-      0,
-      0,
-      i
-    );
+  if (randomCheckBox_value) {
+    randomRectangulars();
   }
   DeepCopyRect = Rectangulars.map((a) => Object.assign(new Rectangular(), a));
   population = new Population(
@@ -209,7 +302,7 @@ function genetic() {
     globalStack++;
   }
 }
-/* function displayInfo() {
+function displayInfo() {
   let statstext = "";
   if (population !== undefined) {
     statstext =
@@ -222,7 +315,7 @@ function genetic() {
     statstext += "mutation rate:         " + population.getMutationRate() + "%";
   }
   stats.html(statstext);
-} */
+}
 
 // Function for resize Canvas according to Window dimensions.
 function windowResized() {
@@ -509,4 +602,53 @@ function checkBoxEvent() {
   } else {
     animationCheckBox_value = false;
   }
+}
+function randomCheckBoxEvent() {
+  if (this.checked()) {
+    randomCheckBox_value = true;
+  } else {
+    randomCheckBox_value = false;
+  }
+  handleStartButton();
+}
+
+function handleStartButton() {
+  if (randomCheckBox_value || Rectangulars.length > 10) {
+    startButton.removeAttribute("disabled");
+  } else {
+    startButton.attribute("disabled", "");
+  }
+}
+
+function createRectangular() {
+  Rectangulars.push(
+    new Rectangular(
+      Math.floor((sliderRectWidth.value() / 100) * ((windowWidth / 100) * 3)) +
+        10,
+      Math.floor(
+        (sliderRectHeight.value() / 100) * ((windowHeight / 100) * 3)
+      ) + 10,
+      0,
+      0,
+      Rectangulars.length
+    )
+  );
+  handleStartButton();
+}
+
+function randomRectangulars() {
+  for (i = 0; i < sliderRectNumber.value(); i++) {
+    Rectangulars[i] = new Rectangular(
+      Math.floor(Math.random() * ((windowWidth / 100) * 7)) + 10,
+      Math.floor(Math.random() * ((windowHeight / 100) * 7)) + 10,
+      0,
+      0,
+      i
+    );
+  }
+}
+
+function resetRectangulars() {
+  Rectangulars = [];
+  handleStartButton();
 }
