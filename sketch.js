@@ -226,7 +226,7 @@ function draw() {
     "Stop Condition: " + sliderStopCondition.value().toString()
   );
   divMutationRate.html(
-    "Mutation Rate: " + (slidermutationRate.value() / 10).toString()
+    "Mutation Rate: " + (slidermutationRate.value() / 10).toString() + "%"
   );
   divPopulationQuantity.html(
     "Population Quantity:" + sliderPopulation.value().toString()
