@@ -1,0 +1,26 @@
+{
+  "name": "deneme-p5",
+  "version": "1.0.0",
+  "description": "unit tests",
+  "main": "sketch.js",
+  "dependencies": {
+    "chai": "^4.3.4"
+  },
+  "devDependencies": {
+    "jest": "^27.0.4",
+    "mocha": "^8.4.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cenkakay08/Genetic-Algorithm-for-Two-dimensional-Rectangular-Packing-Problem-P5.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cenkakay08/Genetic-Algorithm-for-Two-dimensional-Rectangular-Packing-Problem-P5.js/issues"
+  },
+  "homepage": "https://github.com/cenkakay08/Genetic-Algorithm-for-Two-dimensional-Rectangular-Packing-Problem-P5.js#readme"
+}

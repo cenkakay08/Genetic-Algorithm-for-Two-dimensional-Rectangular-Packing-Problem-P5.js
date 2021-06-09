@@ -60,7 +60,7 @@ class Population {
     this.generations++;
 
     if (this.generations >= this.stopCondition) {
-      this.isFinished = true;
+      this.finished = true;
     }
   }
 
@@ -99,4 +99,14 @@ class Population {
     }
     return total / this.population.length;
   }
+
+  getPopulationQuantity() {
+    return this.population.length;
+  }
+
+  getMutationRate() {
+    return this.mutationRate;
+  }
 }
+
+module.exports = { Population };
